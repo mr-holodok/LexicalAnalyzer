@@ -1,0 +1,35 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "Lexem.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+/*__fastcall Lexem::Lexem(tLex type, std::string value, int line, int pos)
+{
+	this->lexType = type;
+	this->value = value;
+	this->line = line;
+	this->pos = pos;
+}*/
+
+tLex Lexem::getLexType()
+{
+	return this->lexType;
+}
+
+std::string Lexem::getValue()
+{
+	return this->value;
+}
+
+unsigned int Lexem::getLine()
+{
+	return this->line;
+}
+
+unsigned int Lexem::getPosition()
+{
+	return this->pos;
+}

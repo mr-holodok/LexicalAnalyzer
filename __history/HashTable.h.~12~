@@ -1,0 +1,25 @@
+//---------------------------------------------------------------------------
+
+#ifndef HashTableH
+#define HashTableH
+
+#include "DataItem.h"
+
+class HashTable
+{
+private:
+	DataItem hashArray[];
+	int size;
+
+public:
+	__fastcall HashTable();
+	void insert(std::string); //this function gets index from hashFunction
+	bool find(std::string);
+
+	//==== it is public only for a test!!=======
+	int hashFunction(long key);  //this function gets key from DataItem
+	long generateKey(std::string);
+};
+
+//---------------------------------------------------------------------------
+#endif

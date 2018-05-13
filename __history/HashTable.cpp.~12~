@@ -1,0 +1,25 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+
+#include "HashTable.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+__fastcall HashTable::HashTable()
+{
+	for(int i = 0; i < size; i++)
+		hashArray[i] = "";
+}
+
+bool HashTable::find(std::string value)
+{
+	int index = hashFunction(value);
+	if (hashArray[index] == value) return true;
+	else return false;
+}
+
+void HashTable::insert(std::string value)
+{
+	int index = hashFunction(value);
+	hashArray[index] = value;
+}

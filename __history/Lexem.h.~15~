@@ -14,7 +14,7 @@ lexLess, lexGreater, lexExclam, lexLessOrEq, lexGreaterOrEq, lexNotEq, lexLessEq
 lexIncrem, lexDecrem, lexArrow, lexAmpersand, lexAmpersandEq,
 lexMod, lexModEq, lexLShift, lexRShift, lexLShiftEq, lexRShiftEq, lexXor,
 lexXorEq, lexBitOr, lexBitOrEq, lexAnd, lexOr, lexStringConst, lexChar, lexUChar,
-lexDecNum, lexOctNum, lexBinNum, lexHexNum, lexNumWithDot, lexHexNumWithDot, lexError
+lexDecNum, lexOctNum, lexHexNum, lexNumWithDot, lexHexNumWithDot, lexError
 };
 //all the types of lexems
 

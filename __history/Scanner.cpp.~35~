@@ -47,7 +47,6 @@ list<Lexem> Scanner::scan(const std::string& path)
 	char ch;              //character for reading of each symbol
 	std::string val;      //string for lexems longer than 1 symbol
 	bool passThrough = false;
-	tLex numState;   //for suffix number states to detect what type number had
 
 	do //loop to end of file. Reads every character
 	{
@@ -153,7 +152,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 					val = ch;
 					ch = file.peek();
 
-					if (isdigit(ch) || ch == 'e' || ch == 'E') {
+					if (ch == '*') {
+						file.get();
+						val += ch;
+						pos++;
+						lexList.push_back(Lexem(lexDotStar, val, line, pos - 1));
+					}
+					else if (isdigit(ch) || ch == 'e' || ch == 'E') {
 						currState = NumWithDot;
 					}
 					else {
@@ -593,12 +598,6 @@ list<Lexem> Scanner::scan(const std::string& path)
 					val += ch;
 					pos++;
 				}
-				else if (ch == 'b' || ch == 'B') {
-					currState = BinNum;
-					ch = file.get();
-					val += ch;
-					pos++;
-				}
 				else {
                    lexList.push_back(Lexem(lexDecNum, val, line, pos));
 				   currState = H;
@@ -635,93 +634,12 @@ list<Lexem> Scanner::scan(const std::string& path)
 					}
 				}
 				if(!passThrough) {
-					numState = lexDecNum;
-					currState = NumSuf;
+					lexList.push_back(Lexem(lexDecNum, val, line, pos - val.length()));
+					currState = H;
 				}
 				break;
 
 			}
-			case NumSuf: {
-				ch = file.peek();
-
-				if (ch == 'L' || ch == 'l') {
-						val += ch;
-						file.get();
-						pos++;
-						currState = NumSufL1;
-				}
-				else if (ch == 'u' || ch == 'U') {
-						val += ch;
-						file.get();
-						pos++;
-						currState = NumSufU1;
-                }
-				else {
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					currState = H;
-				}
-				break;
-			}
-			case NumSufL1 : {
-				ch = file.peek();
-
-				if (ch == 'l' || ch == 'L') {
-					val += ch;
-					file.get();
-					pos++;
-					currState = NumSufL2;
-				}
-				else if (ch == 'u' || ch == 'U') {
-					val += ch;
-					file.get();
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					pos++;
-					currState = H;
-				}
-				else {
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					currState = H;
-				}
-				break;
-			}
-			case NumSufL2 : {
-                ch = file.peek();
-
-				if (ch == 'u' || ch == 'U') {
-					val += ch;
-					file.get();
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					pos++;
-					currState = H;
-				}
-				else {
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					currState = H;
-				}
-				break;
-			}
-			case NumSufU1 : {
-                ch = file.peek();
-
-				if (ch == 'l' || ch == 'L') {
-					val += ch;
-					file.get();
-					ch = file.peek();
-					pos++;
-					if (ch == 'l' || ch == 'L') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-					}
-					else
-						lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-				}
-				else
-					lexList.push_back(Lexem(numState, val, line, pos - val.length()));
-				currState = H;
-				break;
-            }
 			case NumWithDot: {
 				ch = file.peek();
 				passThrough = false;
@@ -900,8 +818,8 @@ list<Lexem> Scanner::scan(const std::string& path)
 					}
 				}
 				if (!passThrough) {
-					numState = lexOctNum;
-					currState = NumSuf;
+					lexList.push_back(Lexem(lexOctNum, val, line, pos - val.length()));
+					currState = H;
 				}
 				break;
 			}
@@ -939,9 +857,15 @@ list<Lexem> Scanner::scan(const std::string& path)
 						break;
 					}
 				}
+
 				if (!passThrough) {
-					numState = lexHexNum;
-					currState = NumSuf;
+					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
+						val += ch;
+						file.get();
+						pos++;
+					}
+					lexList.push_back(Lexem(lexHexNum, val, line, pos - val.length()));
+					currState = H;
 				}
 				break;
 			}
@@ -1086,48 +1010,6 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				break;
 			}
-			case BinNum: {
-				ch = file.peek();
-				passThrough = false;
-
-				while (isdigit(ch) || ch == '.') {
-					if(ch != '0' && ch != '1') {
-						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Expected a binary value!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch));
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
-					}
-					else if (ch == '.') {
-						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch) || ch == '.');
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
-					}
-					else {
-						val += ch;
-						file.get();
-						ch = file.peek();
-						pos++;
-					}
-				}
-				if (!passThrough) {
-                    numState = lexBinNum;
-					currState = NumSuf;
-				}
-				break;
-			}
 			case LineComment: {
 				do {
 					ch = file.get();
@@ -1259,14 +1141,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 				break;
 			}
 			case Directive: {
-				char prevChar;
 				do {
-					prevChar = ch;
 					ch = file.get();
-					if (ch == '\\') {
-						line++;
-					}
-				} while (ch != '\n' && prevChar != '\\');
+				} while (ch != '\n');
 				line++;
 				pos = 1;
 			}

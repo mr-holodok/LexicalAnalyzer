@@ -73,7 +73,6 @@ std::string Lexem::getLexType()
 		case lexUChar: return "Символ UTF-8";
 		case lexDecNum: return "Десяткове константне число";
 		case lexOctNum: return "Вісімкове константне число";
-		case lexBinNum: return "Бінарне константне число";
 		case lexHexNum: return "Шістнадцяткове константне число";
 		case lexNumWithDot: return "Десяткове константне дійсне число";
 		case lexHexNumWithDot: return "Шістнадцяткове дійсне константне число";

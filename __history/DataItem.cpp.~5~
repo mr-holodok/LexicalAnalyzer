@@ -1,0 +1,28 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+
+#include "DataItem.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+__fastcall DataItem::DataItem(double k, std::string v)
+{
+	key = k;
+	value = v;
+}
+
+__fastcall DataItem::DataItem()
+{
+	key = 0;
+	value = "";
+}
+
+double DataItem::getKey()
+{
+	return key;
+}
+
+std::string DataItem::getValue()
+{
+	return value;
+}

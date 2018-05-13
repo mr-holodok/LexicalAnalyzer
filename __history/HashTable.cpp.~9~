@@ -1,0 +1,42 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+
+#include "HashTable.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+__fastcall HashTable::HashTable()
+{
+	size = 100;
+	hashArray = new DataItem[size];
+}
+
+long HashTable::generateKey(std::string value)
+{
+	long key = value[0];
+	for(int i = 1; i < value.length(); i++)
+	{
+		int letter = value[i];
+		key = key * 37 + letter;
+	}
+	return key;
+}
+
+int HashTable::hashFunction(long key)
+{
+	return (int)(key % size);
+}
+
+bool HashTable::find(std::string value)
+{
+	int index = hashFunction(generateKey(value));
+	if (hashArray[index] == value) return true;
+	else return false;
+}
+
+void HashTable::insert(std::string value)
+{
+	DataItem item = DataItem(generateKey(value), value)
+	int index = hashFunction(item.getKey);
+	hashArray[index] = item;
+}

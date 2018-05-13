@@ -47,7 +47,6 @@ list<Lexem> Scanner::scan(const std::string& path)
 	char ch;              //character for reading of each symbol
 	std::string val;      //string for lexems longer than 1 symbol
 	bool passThrough = false;
-	tLex numState;   //for suffix number states to detect what type number had
 
 	do //loop to end of file. Reads every character
 	{
@@ -648,7 +647,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 						val += ch;
 						file.get();
 						pos++;
-						currState = NumSufL1;
+						currState = NumSufL1
 				}
 				else if (ch == 'u' || ch == 'U') {
 						val += ch;

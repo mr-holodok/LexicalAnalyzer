@@ -1,0 +1,18 @@
+//---------------------------------------------------------------------------
+
+#ifndef NodeH
+#define NodeH
+
+#include <string>
+//---------------------------------------------------------------------------
+
+class Node
+{
+public:
+	__fastcall Node(std::string &val);
+private:
+	Node *right, *left;
+	std::string value;
+};
+
+#endif

@@ -1,0 +1,106 @@
+#pragma hdrstop
+#pragma argsused
+
+#include <iostream.h>
+#include "HashTable.h"
+#include <fstream.h>
+#include <string>
+
+#ifdef _WIN32
+#include <tchar.h>
+#else
+  typedef char _TCHAR;
+  #define _tmain main
+#endif
+
+#include <stdio.h>
+
+int xet = 8;
+int val = 50;
+
+int hashFunction(std::string value) {
+		int key = value[0];
+		for(int i = 1; i < value.length(); i++)
+			key = key * i + value[i] * xet;
+		return key % val;
+}
+
+ int _tmain(int argc, _TCHAR* argv[])
+{
+	HashTable hashTable;
+
+
+	std::string buff;
+	int arr[90];
+	for(int i = 0; i < 90; i++)
+		arr[i] = -1;
+
+
+	int i = 0;
+
+
+	bool original = false;
+
+	while(!original) {
+
+	i = 0;
+	ifstream f2;
+	f2.open("L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Scanner//hash.txt");
+	if (!f2) {
+		std::cout << "File not found!";
+	}
+
+	while(!f2.eof()) //loop to end of file. Reads every character
+	{
+		f2 >> buff;
+		arr[i] = hashFunction(buff);
+		i++;
+	}
+	std::cout << i - 1 << " Written this amount of values." << std::endl;
+	f2.close();
+
+	for(int j = 0; j < 83; j++)
+	{
+		int pointer = 0;
+
+		while(pointer < 83 - j)
+		{
+			if (arr[pointer] > arr[pointer + 1])
+			{
+				int temp = arr[pointer];
+				arr[pointer] = arr[pointer + 1];
+				arr[pointer + 1] = temp;
+				pointer++;
+			}
+			else pointer++;
+		}
+	}
+
+	ofstream f;
+	f.open("L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Scanner//a.txt");
+
+	for(int j = 0; j < 84; j++)
+	{
+		f << arr[j] << std::endl;
+	}
+	f.close();
+
+	for(int j = 0; j < 83; j++)
+	{
+		if(arr[j] == arr[j + 1])
+		{val++;
+		if(val > 120) {xet++; val = 20;}
+		std::cout << val << " We changing this value." << std::endl;
+		break;}
+		else if(j == 82) original = true;
+	}
+}
+
+
+
+	std::cout << val << " - It is the most approproate value! " << xet;
+
+	int a = 0;
+	std::cin >> a;
+	return 0;
+}

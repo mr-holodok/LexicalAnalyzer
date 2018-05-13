@@ -1,0 +1,23 @@
+//---------------------------------------------------------------------------
+
+#ifndef LinkedDataListH
+#define LinkedDataListH
+
+#include "DataItem.h"
+#include <string>
+
+class LinkedDataList
+{
+private:
+	DataItem *first;
+	DataItem *last;
+
+public:
+	LinkedDataList() : first(NULL), last(NULL) {};
+	void insert(std::string);
+	bool find(std::string);
+
+};
+
+//---------------------------------------------------------------------------
+#endif

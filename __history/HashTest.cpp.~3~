@@ -1,0 +1,80 @@
+#pragma hdrstop
+#pragma argsused
+
+#include <iostream.h>
+#include "Unit1.h"
+#include <fstream.h>
+#include <windows.h>
+#include <string>
+
+#ifdef _WIN32
+#include <tchar.h>
+#else
+  typedef char _TCHAR;
+  #define _tmain main
+#endif
+
+#include <stdio.h>
+
+ int _tmain(int argc, _TCHAR* argv[])
+{
+	HashTable hashTable; //= HashTable();
+	//hashTable.insert("int");
+
+	ifstream file; //file that contains text of program
+	std::string buff;
+
+	/*hashTable.insert("alignas");
+	hashTable.insert("alignof");
+	hashTable.insert("and");
+	hashTable.insert("and_eq");
+	hashTable.insert("asm");
+	hashTable.insert("auto");
+	hashTable.insert("bitand");
+	hashTable.insert("bitor");
+	hashTable.insert("bool");
+	hashTable.insert("break");
+	hashTable.insert("case");
+	hashTable.insert("catch");
+	hashTable.insert("char");
+	hashTable.insert("char16_t");
+	hashTable.insert("char32_t");
+	hashTable.insert("class");
+	hashTable.insert("compl");
+	hashTable.insert("const");
+	hashTable.insert("constexpr");*/
+
+	file.open("L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Scanner//hash.txt");
+	if (!file) {
+		std::cout << "File not found!";
+	}
+
+	while(!file.eof()) //loop to end of file. Reads every character
+	{
+		file >> buff;
+		hashTable.insert(buff);
+		std::cout << buff << std::endl;
+	}
+
+	file.close();
+
+	ifstream f;
+	f.open("L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Scanner//h.txt");
+	if (!f) {
+		std::cout << "File not found!";
+	}
+
+	int b = GetTickCount();
+	while(!f.eof())
+	{
+		f >> buff;
+		std::cout << hashTable.find(buff) << std::endl;
+	}
+	cout << GetTickCount() - b;
+
+	f.close();
+
+	int a = 0;
+	std::cin >> a;
+	return 0;
+}

@@ -1,0 +1,39 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "Node.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+__fastcall Node::Node(std::string &val)
+{
+	value = val;
+	left = NULL;
+	right = NULL;
+}
+
+void Node::setLeftNode(Node *d)
+{
+	left = d;
+}
+
+void Node::setRightNode(Node *d)
+{
+	right = d;
+}
+
+Node* Node::getLeftNode()
+{
+	return left;
+}
+
+Node* Node::getRightNode()
+{
+	return right;
+}
+
+std::string Node::getValue()
+{
+	return value;
+}

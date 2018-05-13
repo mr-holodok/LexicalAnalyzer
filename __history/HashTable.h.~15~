@@ -1,0 +1,31 @@
+//---------------------------------------------------------------------------
+
+#ifndef HashTableH
+#define HashTableH
+
+#include <string>
+
+class HashTable
+{
+private:
+	const static int size = 100;
+	std::string hashArray[size];
+
+
+public:
+	__fastcall HashTable();
+	void insert(std::string);
+	bool find(std::string);
+
+	//=======This function here only for a test!!! ==========
+	static int hashFunction(std::string value) {
+		int key = value[0];
+		for(int i = 1; i < value.length(); i++)
+			key += value[i];
+		return key % 149;
+	};
+	//==========================
+};
+
+//---------------------------------------------------------------------------
+#endif

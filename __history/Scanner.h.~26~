@@ -21,10 +21,11 @@ private:
 
 
 	enum states {H, KWorID, UCharOrID, UCharEnd, Char, EscapeChar, CharEnd, ErrorCharEnd, String, NumStartsWithDot,
-	NumStartsWithZero, OctNum, DecNum, HexNum, BinNum, NumWithDot, Num, NumWithExp, NumSuf, NumSufU1, NumSufL1, NumSufL2,
+	NumStartsWithZero, OctNum, DecNum, HexNum, NumWithDot, Num, NumWithExp, NumSuf, NumSufU1, NumSufL1, NumSufL2,
 	HexNumWithExpMan, HexNumWithDot, HexNumWithExp, NumWithExpMan, LineComment,
 	WideComment, WideCommentEnd, Less, LessEq, LeftShift, Greater, RightShift, Directive };
 	states currState;
+	tLex numState;
 	void initHashTable();
 	void initAuto();
 

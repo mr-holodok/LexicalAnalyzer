@@ -1,0 +1,20 @@
+//---------------------------------------------------------------------------
+
+#ifndef DataItemH
+#define DataItemH
+
+#include <string>
+
+class DataItem
+{
+private:
+	int key;
+	std::string value;
+public:
+	__fastcall DataItem(int, std::string);
+	int getKey();
+	int getValue();
+};
+
+//---------------------------------------------------------------------------
+#endif

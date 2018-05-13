@@ -20,8 +20,8 @@ private:
 	list<ErrorMessage> Errors;
 
 
-	enum states {H, KWorID, UCharOrID, UCharEnd, Char, EscapeChar, CharEnd, ErrorCharEnd, String, NumStartsWithDot,
-	NumStartsWithZero, OctNum, DecNum, HexNum, BinNum, NumWithDot, Num, NumWithExp, NumSuf, NumSufU1, NumSufL1, NumSufL2,
+	enum states {H, KWorID, Char, EscapeChar, CharEnd, ErrorCharEnd, String, NumStartsWithDot,
+	NumStartsWithZero, OctNum, DecNum, HexNum, NumWithDot, Num, NumWithExp,
 	HexNumWithExpMan, HexNumWithDot, HexNumWithExp, NumWithExpMan, LineComment,
 	WideComment, WideCommentEnd, Less, LessEq, LeftShift, Greater, RightShift, Directive };
 	states currState;

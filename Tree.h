@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef TreeH
 #define TreeH
 
@@ -9,7 +9,7 @@
 class Tree
 {
 public:
-	__fastcall Tree();
+	Tree();
 	void AddNode(std::string &val);
 	bool FindNode(std::string &val);
 private:

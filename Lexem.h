@@ -1,19 +1,29 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef LexemH
 #define LexemH
 
 #include <string>
 
 enum tLex{
-lexIdentif, lexKeyWord, lexComma, lexDot, lexColons, lexDblColons, lexSemiColon,
-lexLParenthesis, lexRParenthesis, lexLBracket, lexRBracket, lexLBrace, lexRBrace, lexQuotes,
-lexQuotation, lexTilde, lexQuestion, lexPlus, lexMinus, lexStar, lexDiv,
-lexEquating, lexPlusEq, lexMinusEq, lexMultEq, lexDivEq, lexEqual,
-lexLess, lexGreater, lexExclam, lexLessOrEq, lexGreaterOrEq, lexNotEq, lexLessEqGreater,
-lexIncrem, lexDecrem, lexArrow, lexAmpersand, lexAmpersandEq,
-lexMod, lexModEq, lexLShift, lexRShift, lexLShiftEq, lexRShiftEq, lexXor,
-lexXorEq, lexBitOr, lexBitOrEq, lexAnd, lexOr, lexStringConst, lexChar, lexUChar,
+lexIdent, lexKeyWord, lexComma, lexColons, lexDblColons, lexSemiColon,
+lexLRoundBracket, lexRRoundBracket, lexLSquareBracket, lexRSquareBracket,
+lexLFigureBracket, lexRFigureBracket, lexQuestion,
+lexAmpersand, lexStar,
+lexArithmOp,
+//lexTilde, lexPlus, lexMinus, lexDiv, lexMod, lexLShift, lexRShift, lexXor, lexBitOr,
+lexMembAcsOp,
+//lexArrow, lexDot,
+lexLogicOp,
+//lexExclam, lexAnd, lexOr,
+lexAssgnOp,
+//lexEquating, lexPlusEq, lexMinusEq, lexMultEq, lexDivEq, lexAmpersandEq,
+//lexModEq, lexLShiftEq, lexRShiftEq, lexXorEq, lexBitOrEq,
+lexLAngleBracket, lexRAngleBracket,
+lexCompOp,
+//lexLessOrEq, lexGreaterOrEq, lexNotEq, lexLessEqGreater, lexEqual,
+lexIncrem, lexDecrem,
+lexStringConst, lexChar, lexUChar,
 lexDecNum, lexOctNum, lexBinNum, lexHexNum, lexNumWithDot, lexHexNumWithDot, lexError
 };
 //all the types of lexems
@@ -21,15 +31,15 @@ lexDecNum, lexOctNum, lexBinNum, lexHexNum, lexNumWithDot, lexHexNumWithDot, lex
 class Lexem
 {
 private:
-	std::string lexType;      //type from enumeration tLex
+	tLex lexType;      //type from enumeration tLex
 	std::string value;
 	unsigned int line;          //line in which Lexem was found
 	unsigned int pos;           //position of Lexem
 
 public:
-	__fastcall Lexem(tLex lex, const std::string& val, const int& l, const int& p) :
+	Lexem(tLex lex, const std::string& val, const int& l, const int& p) :
 				lexType(lex), value(val), line(l), pos(p) {};
-	tLex getLexType();
+	std::string getLexType();
 	std::string getValue();
 	unsigned int getLine();
 	unsigned int getPosition();

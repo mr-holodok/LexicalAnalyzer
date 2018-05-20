@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef ErrorMessageH
 #define ErrorMessageH
 
@@ -9,8 +9,11 @@
 class ErrorMessage
 {
 public:
-	__fastcall ErrorMessage(unsigned int l, unsigned int p, char* msg);
-	__fastcall ErrorMessage(unsigned int l, unsigned int p);
+	ErrorMessage(unsigned int l, unsigned int p, char* msg);
+	ErrorMessage(unsigned int l, unsigned int p);
+	unsigned int getLine();
+	unsigned int getPos();
+	std::string getText();
 private:
 	unsigned int pos, line;
 	char* message;

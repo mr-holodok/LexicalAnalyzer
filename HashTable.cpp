@@ -1,11 +1,13 @@
 //---------------------------------------------------------------------------
+#pragma unmanaged
 #pragma hdrstop
 
+#include "stdafx.h"
 #include "HashTable.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-__fastcall HashTable::HashTable() {}
+HashTable::HashTable() {}
 
 bool HashTable::find(const std::string &value)
 {

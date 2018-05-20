@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef ScannerH
 #define ScannerH
 
@@ -8,7 +8,7 @@
 #include "Tree.h"
 #include "ErrorMessage.h"
 #include <list>
-#include <iostream.h>
+//#include <iostream.h>
 
 class Scanner {
 
@@ -20,16 +20,20 @@ private:
 	list<ErrorMessage> Errors;
 
 
-	enum states {H, KWorID, UCharOrID, UCharEnd, Char, EscapeChar, CharEnd, ErrorCharEnd, String, NumStartsWithDot,
-	NumStartsWithZero, OctNum, DecNum, HexNum, BinNum, NumWithDot, Num, NumWithExp, NumSuf, NumSufU1, NumSufL1, NumSufL2,
-	HexNumWithExpMan, HexNumWithDot, HexNumWithExp, NumWithExpMan, LineComment,
-	WideComment, WideCommentEnd, Less, LessEq, LeftShift, Greater, RightShift, Directive };
+	enum states {H, KWorID, UCharOrID, U8CharOrID, UCharEnd, Char, EscapeChar, ErrorCharEnd,
+	CharEnd, String, NumStartsWithZero, Num, NumSuf, NumSufL1, NumSufL2,
+	NumSufU1, NumSufU2, FloatSuf, SufEndCheck, NumWithDot, NumWithExp,
+	NumWithExpSign, NumWithExpMan, OctNum, HexNum, HexNumWithDot, HexNumWithExp,
+	HexNumWithExpSign, HexNumWithExpMan, BinNum, Dot, Colon, Plus, Minus, Assign,
+	Amp, Div, Or, LineComment, WideComment, WideCommentEnd, Less, LessEq, LeftShift,
+	Greater, RightShift, Directive, F, ErrorLexemEnd };
 	states currState;
 	void initHashTable();
 	void initAuto();
+	bool isCharAllowed(char ch);
 
 public:
-	__fastcall Scanner();
+	Scanner();
 	list<Lexem> scan(const std::string&);
 	list<ErrorMessage> getErrors();
 	//method, that get a text of program, and returns the lexem table

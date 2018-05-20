@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef HashTableH
 #define HashTableH
 
@@ -20,7 +20,7 @@ private:
 	};//============================================
 
 public:
-	__fastcall HashTable();
+	HashTable();
 	void insert(const std::string&);
 	bool find(const std::string&);
 };

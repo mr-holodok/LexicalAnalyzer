@@ -23,12 +23,22 @@
 	//* test output
 	for(list<Lexem>::iterator iter = lexList.begin();
 			iter != lexList.end(); ++iter)
-		std::cout << iter->getValue();
-		//std::cout << pos;
+	{
+		std::cout << iter->getValue() << " ";
+		std::cout << iter->getLine() << " ";
+		std::cout << iter->getPosition() << " ";
+		std::cout << iter->getLine() << " ";
+		std::cout << iter->getLexType() << std::endl;
+	}
 	//===============
 
-	std::cout << sizeof(filePath);
+	//std::cout << sizeof(filePath);
 
+	int b = 011;
+	std::cout << b;
+
+	//double c = 1.;
+    //char cc = 'dhh ';
 	int a = 0;
 	std::cin >> a;
 	return 0;

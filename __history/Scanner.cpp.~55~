@@ -47,6 +47,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 	char ch;              //character for reading of each symbol
 	std::string val;      //string for lexems longer than 1 symbol
 	bool passThrough = false;
+	tLex type;
 
 	do //loop to end of file. Reads every character
 	{
@@ -55,325 +56,144 @@ list<Lexem> Scanner::scan(const std::string& path)
 			case H : {
 				ch = file.get();  //getting symbol
 				val.clear();
+				type = lexError;
 
 				if (ch == ' ') {
-					pos++;
+					++pos;
 					continue;
 				}
-				else if (ch ==  85 || ch == 76 || ch == 117) {
-					val = ch;
+				else if (ch ==  85 || ch == 76) {
 					currState = UCharOrID;
-					pos++;
+				}
+				else if (ch == 117) {
+					currState = U8CharOrID;
 				}
 				else if ((ch >= 65 && ch <= 90) || ch == 95 || (ch >= 97 && ch <= 122)) {
-					val = ch;
 					currState = KWorID;
-					pos++;
 				}
 				else if (ch == ';') {
-					val = ch;
-					lexList.push_back(Lexem(lexSemiColon, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexSemiColon;
 				}
 				else if (ch == '\t') {
 					pos+=3;
 					continue;
 				}
-				else if (ch == '\r') continue;
+				//else if (ch == '\r') continue;
 				else if (ch == '\n') {
-					line++;
+					++line;
 					pos = 1;
 					continue;
 				}
 				else if (ch == '(') {
-					val = ch;
-					lexList.push_back(Lexem(lexLParenthesis, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexLRoundBracket;
 				}
 				else if (ch == ')') {
-					val = ch;
-					lexList.push_back(Lexem(lexRParenthesis, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexRRoundBracket;
 				}
 				else if (ch == '[') {
-					val = ch;
-					lexList.push_back(Lexem(lexLBracket, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexLSquareBracket;
 				}
 				else if (ch == ']') {
-                    val = ch;
-					lexList.push_back(Lexem(lexRBracket, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexRSquareBracket;
 				}
 				else if (ch == '{') {
-					val = ch;
-					lexList.push_back(Lexem(lexLBrace, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexLFigureBracket;
 				}
 				else if (ch == '}') {
-                    val = ch;
-					lexList.push_back(Lexem(lexRBrace, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexRFigureBracket;
 				}
 				else if (ch == ',') {
-                    val = ch;
-					lexList.push_back(Lexem(lexComma, val, line, pos));
-					pos++;
+					currState = F;                                                                                                
+					type = lexComma;
 				}
 				else if (ch == '?') {
-					val = ch;
-					lexList.push_back(Lexem(lexQuestion, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexQuestion;
 				}
 				else if	(ch == '~') {
-					val = ch;
-					lexList.push_back(Lexem(lexTilde, val, line, pos));
-					pos++;
+					currState = F;
+					type = lexArithmOp;
 				}
 				else if (ch == '\'') {
 					currState = Char;
-					pos++;
 				}
 				else if (ch == '\"') {
 					currState = String;
-					pos++;
 				}
 				else if (ch == '0') {
 					currState = NumStartsWithZero;
-					val = ch;
-					pos++;
 				}
 				else if (ch >= 49 && ch <= 57) {
 					currState = Num;
-					val = ch;
-					pos++;
 				}
 				else if (ch == '.') {
-					val = ch;
-					ch = file.peek();
-
-					if (isdigit(ch) || ch == 'e' || ch == 'E') {
-						currState = NumWithDot;
-					}
-					else {
-						lexList.push_back(Lexem(lexDot, val, line, pos));
-					}
-					pos++;
+					currState = Dot;
 				}
 				else if (ch == ':') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == ':') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexDblColons, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexColons, val, line, pos));
-					}
-					pos++;
+					currState = Colon;
 				}
 				else if (ch == '+') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '+') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexIncrem, val, line, pos - 1));
-					}
-					else if (ch == '=')
-					{
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexPlusEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexPlus, val, line, pos));
-					}
-					pos++;
+					currState = Plus;
 				}
 				else if (ch == '-') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '-') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexDecrem, val, line, pos - 1));
-					}
-					else if (ch == '=')
-					{
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexMinusEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexMinus, val, line, pos));
-					}
-					pos++;
+					currState = Minus;
 				}
 				else if (ch == '!') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexNotEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexExclam, val, line, pos));
-					}
-					pos++;
+					type = lexLogicOp;
+					currState = Assign;
 				}
 				else if (ch == '*') {
-                	val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexMultEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexStar, val, line, pos));
-					}
-					pos++;
+					currState = Assign;
+					type = lexStar;
 				}
 				else if (ch == '&') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexAmpersandEq, val, line, pos - 1));
-					}
-					else if (ch == '&') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexAnd, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexAmpersand, val, line, pos));
-					}
-					pos++;
+					currState = Amp;
 				}
 				else if (ch == '/') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexDivEq, val, line, pos - 1));
-					}
-					else if (ch == '/') {
-						val += ch;
-						file.get();
-						pos++;
-						currState = LineComment;
-					}
-					else if (ch == '*') {
-						val += ch;
-						file.get();
-						pos++;
-						currState = WideComment;
-					}
-					else {
-						lexList.push_back(Lexem(lexDiv, val, line, pos));
-					}
-					pos++;
+					currState = Div;
 				}
 				else if (ch == '%') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexModEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexMod, val, line, pos));
-					}
-					pos++;
+					currState = Assign;
+					type = lexArithmOp;
 				}
 				else if (ch == '<') {
-					val = ch;
 					currState = Less;
 				}
 				else if (ch == '>') {
-					val = ch;
 					currState = Greater;
 				}
 				else if (ch == '=') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexEqual, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexEquating, val, line, pos));
-					}
-					pos++;
+					currState = Assign;
+					type = lexAssgnOp;
 				}
 				else if (ch == '^') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexXorEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexXor, val, line, pos));
-					}
-					pos++;
+					currState = Assign;
+					type = lexArithmOp;
 				}
 				else if (ch == '|') {
-					val = ch;
-					ch = file.peek();
-
-					if (ch == '=') {
-						val += ch;
-						file.get();
-						pos++;
-						lexList.push_back(Lexem(lexBitOrEq, val, line, pos - 1));
-					}
-					else {
-						lexList.push_back(Lexem(lexBitOr, val, line, pos));
-					}
-					pos++;
+					currState = Or;
 				}
 				else if (ch == '#') {
 					currState = Directive;
+					continue;
+				}
+				else if (ch == -1) {
+					//end of file
+					continue;
 				}
 				else {
-					val += ch;
 					Errors.push_back(ErrorMessage(line, pos));
-					lexList.push_back(Lexem(lexError, val, line, pos));
-					pos++;
+					currState = F;
 				}
+
+				val = ch;
 				break;
 			}
 			case KWorID: {      //Key word or identifier
@@ -381,77 +201,72 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if((ch >= 48 && ch <= 57) || (ch >= 65 && ch <= 90) ||
 							ch == 95 || (ch >= 97 && ch <= 122)) {
-					val += ch;
-					pos++;
 					file.get();
+					val += ch;
 				}
-				else {
+				else if (isCharAllowed(ch)) {
 					bool keyWord = hashTable.find(val);
 					if(keyWord)
-						lexList.push_back(Lexem(lexKeyWord, val, line, pos - val.length()));
+						type = lexKeyWord;
 					else {
 						bool already = tree.FindNode(val);
 						if(!already) tree.AddNode(val);
-						lexList.push_back(Lexem(lexIdentif, val, line, pos - val.length()));
+						type = lexIdent;
 					}
-					currState = H;
+					currState = F;
 				}
+				else {
+					Errors.push_back(ErrorMessage(line, pos, "Uncorrect format of Identifier!"));
+					currState = ErrorLexemEnd;
+                }
 				break;
 			}
 			case UCharOrID: {
 				ch = file.peek();
 
-				if (ch == '8' && val == "u") {
-					val += ch;
+				if (ch == '\'') {
 					file.get();
-					pos++;
-					ch = file.peek();
-					if (ch == '\'') {
-						val += ch;
-						file.get();
-						pos++;
-						currState = UCharEnd;
-					}
-					else {
-						currState = KWorID;
-					}
-				}
-				else if (ch == '\'') {
 					val += ch;
-					file.get();
-					pos++;
 					currState = UCharEnd;
 				}
 				else {
 					currState = KWorID;
-                }
+				}
+				break;
+			}
+			case U8CharOrID: {
+				ch = file.peek();
+
+				if (ch == '8') {
+					currState = UCharOrID;
+					file.get();
+					val += ch;
+				}
+				else currState = KWorID;
 				break;
 			}
 			case UCharEnd: {  // State for end of UTF-8 Char
 				ch = file.peek();
 
 				while (ch != '\'') {
-					val += ch;
 					file.get();
-					pos++;
+					val += ch;
 					ch = file.peek();
 				}
 				if (ch == '\'' && val.length() > 6) {
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
 						Errors.push_back(ErrorMessage(line, pos, "UTF-8 Character is too long!"));
-						currState = H;
+						currState = F;
 				}
 				else if (ch == '\'') {
-						lexList.push_back(Lexem(lexUChar, val, line, pos - val.length()));
+						type = lexUChar;
 						Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
-						currState = H;
+						currState = F;
 				}
 				else if (ch == file.eof()) {
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" ' \" to end a char!"));
-						currState = H;
+						Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" \' \" to end a char!"));
+						currState = F;
 				}
-			break;
+				break;
 			}
 			case Char: {
 				ch = file.get();
@@ -461,7 +276,6 @@ list<Lexem> Scanner::scan(const std::string& path)
 				else
 					currState = EscapeChar;
 				val = ch;
-				pos++;
 				break;
 			}
 			case EscapeChar: {    // State for escape sequence characters
@@ -469,16 +283,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if (ch == 'n' || ch == 't' || ch == 'r' || ch == '\'' || ch == '\"' || ch == 'v' ||
 					ch == '?' || ch == '\\' || ch == '0' || ch == 'a' || ch == 'b' || ch == 'f') {
-					val += ch;
 					currState = CharEnd;
-					pos++;
 				}
 				else {
-					val += ch;
 					Errors.push_back(ErrorMessage(line, pos, "Expected an escape char!"));
-					pos++;
 					currState = ErrorCharEnd;
 				}
+				val += ch;
 				break;
 			}
 			case ErrorCharEnd: {  // State for error end of Char
@@ -486,16 +297,18 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if (ch == '\'') {
 					file.get();
-					lexList.push_back(Lexem(lexError, val, line, pos - 3));
-					pos++;
-					currState = H;
+					val += ch;
+					currState = F;
 				}
 				else {
-					lexList.push_back(Lexem(lexError, val, line, pos - 3));
-					Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" ' \" to end a char!"));
-					currState = H;
+					while (ch != '\'') {
+						file.get();
+						val += ch;
+						ch = file.peek();
+					}
+					Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
+					currState = F;
 				}
-				pos++;
 				break;
 			}
 			case CharEnd: {  // State for end of Char
@@ -503,31 +316,27 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if (ch == '\'') {
 					file.get();
-					lexList.push_back(Lexem(lexChar, val, line, pos - val.length()));
-					pos++;
-					currState = H;
+					type = lexChar;
+					currState = F;
 				}
 				else {
 					while (ch != '\'') {
-						val += ch;
 						file.get();
-						pos++;
+						val += ch;
 						ch = file.peek();
 					}
 					if (ch == '\'' && val.length() > 4) {
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
 						Errors.push_back(ErrorMessage(line, pos, "Character is too long!"));
-						currState = H;
+						currState = F;
 					}
 					else if (ch == '\'') {
-						lexList.push_back(Lexem(lexChar, val, line, pos - val.length()));
+						type = lexChar;
 						Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
-						currState = H;
+						currState = F;
 					}
 					else if (ch == file.eof()) {
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
 						Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" ' \" to end a char!"));
-						currState = H;
+						currState = F;
 					}
 				}
 				break;
@@ -535,72 +344,64 @@ list<Lexem> Scanner::scan(const std::string& path)
 			case String: {
 				ch = file.get();
 
-				while (!(ch == '\"' &&
-					val[val.length() - 1] != '\\')) {//check if double quotes is really end of string
-													 //not the escape character
+				while ((!(ch == '\"' &&
+					val[val.length() - 1] != '\\')) && ch != file.eof()) {
+													//check if double quotes is really end of string
+													//not the escape character
 					val += ch;
-					pos++;
 					ch = file.get();
 				}
-				currState = H;
-				lexList.push_back(Lexem(lexStringConst, val, line, pos - val.length()));
-				pos++;
+				if (ch == file.eof()) {
+						Errors.push_back(ErrorMessage(line, pos, "Expected a double quotation \' \" \' to end a char!"));
+						currState = F;
+				}
+				else {
+					val += ch;
+					type = lexStringConst;
+					currState = F;
+				}
 				break;
 			}
 			case NumStartsWithZero: {
 				ch = file.peek();
 
 				if (isdigit(ch) && ch != '0' && ch != '8' && ch != '9') {
-					currState = OctNum;
 					ch = file.get();
 					val += ch;
-					pos++;
+					currState = OctNum;
 				}
 				else if(isdigit(ch)) {
 					if (ch == '0') {
 						Errors.push_back(ErrorMessage(line, pos, "Uncorrect octal value!"));
-						while (isdigit(ch)) {
-							val += ch;
-							pos++;
-							file.get();
-							ch = file.peek();
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						currState = ErrorLexemEnd;
 					}
 					else if (ch == '8' || ch != '9') {
 						Errors.push_back(ErrorMessage(line, pos, "Expected an octal number!"));
-						while (isdigit(ch)) {
-							val += ch;
-							pos++;
-							file.get();
-							ch = file.peek();
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						currState = ErrorLexemEnd;
 					}
 				}
 				else if (ch == '.') {
-					currState = NumWithDot;
 					ch = file.get();
 					val += ch;
-					pos++;
+					currState = NumWithDot;
 				}
 				else if (ch == 'x' || ch == 'X') {
-					currState = HexNum;
-					ch = file.get();
+                    ch = file.get();
 					val += ch;
-					pos++;
+					currState = HexNum;
 				}
 				else if (ch == 'b' || ch == 'B') {
-					currState = BinNum;
-					ch = file.get();
+                    ch = file.get();
 					val += ch;
-					pos++;
+					currState = BinNum;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
 				}
 				else {
-                   lexList.push_back(Lexem(lexDecNum, val, line, pos));
-				   currState = H;
+				   type = lexDecNum;
+				   currState = F;
 				}
 				break;
 			}
@@ -612,33 +413,175 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if (isdigit(ch)) {
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
+                        file.get();
+						val += ch;
 						currState = NumWithDot;
 						passThrough = true;
-						file.get();
-						val += ch;
-						pos++;
 						break;
 					}
 					else if (ch == 'e' || ch == 'E')
 					{
-						currState = NumWithExp;
-						passThrough = true;
 						file.get();
 						val += ch;
-						pos++;
+						currState = NumWithExp;
+						passThrough = true;
 						break;
 					}
 				}
 				if(!passThrough) {
-					lexList.push_back(Lexem(lexDecNum, val, line, pos - val.length()));
-					currState = H;
+					type = lexDecNum;
+					currState = NumSuf;
 				}
 				break;
 
+			}
+			case NumSuf: {
+				ch = file.peek();
+
+				if (ch == 'L' || ch == 'l') {
+						file.get();
+						val += ch;
+						currState = NumSufL1;
+				}
+				else if (ch == 'u' || ch == 'U') {
+						file.get();
+						val += ch;
+						currState = NumSufU1;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case NumSufL1 : {
+				ch = file.peek();
+
+				if (ch == 'l' || ch == 'L') {
+					file.get();
+					val += ch;
+					currState = NumSufL2;
+				}
+				else if (ch == 'u' || ch == 'U') {
+					file.get();
+					val += ch;
+					currState = SufEndCheck;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case NumSufL2 : {
+				ch = file.peek();
+
+				if (ch == 'u' || ch == 'U') {
+					file.get();
+					val += ch;
+					currState = SufEndCheck;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case NumSufU1 : {
+                ch = file.peek();
+
+				if (ch == 'l' || ch == 'L') {
+					file.get();
+					val += ch;
+					currState = NumSufU2;
+				}
+				else if (isalpha(ch)) {
+                	Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case NumSufU2: {
+				ch = file.peek();
+
+				if (ch == 'l' || ch == 'L') {
+					file.get();
+					val += ch;
+					currState = SufEndCheck;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case FloatSuf: {
+				ch = file.peek();
+
+				if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
+					file.get();
+					val += ch;
+					currState = SufEndCheck;
+				}
+				else if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
+			}
+			case SufEndCheck: {
+				ch = file.peek();
+
+				if (isalpha(ch)) {
+					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					currState = ErrorLexemEnd;
+				}
+				else if (!isCharAllowed(ch)) {
+					Errors.push_back(ErrorMessage(line, pos));
+					currState = ErrorLexemEnd;
+				}
+				else
+					currState = F;
+				break;
 			}
 			case NumWithDot: {
 				ch = file.peek();
@@ -646,88 +589,72 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				while(isdigit(ch) || ch == '.' || ch == 'e' || ch == 'E') {
 					if (isdigit(ch)) {
-						//if (val[0] == '.')
-						//	val = '0' + val;
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch) || ch == 'e' || ch == 'E' || ch == '.');
-						if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-							val += ch;
-							file.get();
-							pos++;
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						file.get();
+						val += ch;
+						currState = ErrorLexemEnd;
+						break;
 					}
 					else if (ch == 'e' || ch == 'E')
 					{
 						passThrough = true;
 						if (val.length() == 1 && val[0] == '.') {
 							Errors.push_back(ErrorMessage(line, pos, "Expected a mantis!"));
-							do {
-								val += ch;
-								file.get();
-								pos++;
-								ch = file.peek();
-							} while (isdigit(ch) || ch == 'e' || ch == 'E' || ch == '.');
-							if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-								val += ch;
-								file.get();
-								pos++;
-							}
-							lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-							currState = H;
+							currState = ErrorLexemEnd;
 						}
 						else {
-							currState = NumWithExp;
 							file.get();
 							val += ch;
-							pos++;
-							break;
+							currState = NumWithExp;
 						}
+						break;
 					}
 				}
 				if (!passThrough) {
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexNumWithDot, val, line, pos - val.length()));
-					currState = H;
+					type = lexNumWithDot;
+					currState = FloatSuf;
 				}
 				break;
 			}
 			case NumWithExp: {
 				ch = file.peek();
 
-				if(ch == '-' || ch == '+' || isdigit(ch)) {
-					currState = NumWithExpMan;
+				if(ch == '-' || ch == '+') {
 					file.get();
 					val += ch;
-					pos++;
+					currState = NumWithExpSign;
+				}
+				else if (isdigit(ch)) {
+					 file.get();
+					 val += ch;
+					 currState = NumWithExpMan;
 				}
 				else {
 					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
-					file.get();
-					val += ch;
-					lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-					pos++;
-					currState = H;
+					currState = ErrorLexemEnd;
 				}
 				break;
 			}
+			case NumWithExpSign: {
+				ch = file.get();
+
+				if (isdigit(ch)) {
+					file.get();
+					val += ch;
+					currState = NumWithExpMan;
+				}
+                else {
+					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					currState = ErrorLexemEnd;
+				}
+				break;
+            }
 			case NumWithExpMan: {
 				ch = file.peek();
 				passThrough = false;
@@ -736,48 +663,22 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if (isdigit(ch)) {
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						if (val.find(".") != -1)
+						if (val.find(".") != std::string::npos)
 							Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
 						else
 							Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch) || ch == 'e' || ch == 'E' || ch == '.');
-						if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-							val += ch;
-							file.get();
-							pos++;
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						file.get();
+						val += ch;
+						currState = ErrorLexemEnd;
 					}
 				}
-				if (!isdigit(val[val.length() - 1])) {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-					currState = H;
-				}
-				else if (!passThrough) {
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexNumWithDot, val, line, pos - val.length()));
-					currState = H;
+				if (!passThrough) {
+					type = lexNumWithDot;
+					currState = FloatSuf;
 				}
 				break;
 			}
@@ -789,37 +690,24 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if(ch == '8' || ch == '9') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Expected an octal value!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch));
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						currState = ErrorLexemEnd;
 					}
 					else if (ch == '.') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch) || ch == '.');
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						file.get();
+						val += ch;
+						currState = ErrorLexemEnd;
 					}
 					else {
-						val += ch;
 						file.get();
+						val += ch;
 						ch = file.peek();
-						pos++;
 					}
 				}
 				if (!passThrough) {
-					lexList.push_back(Lexem(lexOctNum, val, line, pos - val.length()));
-					currState = H;
+					type = lexOctNum;
+					currState = NumSuf;
 				}
 				break;
 			}
@@ -830,21 +718,19 @@ list<Lexem> Scanner::scan(const std::string& path)
 				if (!isxdigit(ch) && ch != '.' && ch != 'p' && ch != 'P') {
 					passThrough = true;
 					Errors.push_back(ErrorMessage(line, pos, "Expected a hex value!"));
-					lexList.push_back(Lexem(lexError, val, line, pos - 2));
+					currState = ErrorLexemEnd;
 				}
 
 				while (isxdigit(ch) || ch == '.' || ch == 'p' || ch == 'P') {
 					if (isxdigit(ch)) {
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
 						passThrough = true;
 						file.get();
 						val += ch;
-						pos++;
 						currState = HexNumWithDot;
 						break;
 					}
@@ -852,20 +738,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 						passThrough = true;
 						file.get();
 						val += ch;
-						pos++;
 						currState = HexNumWithExp;
 						break;
 					}
 				}
-
 				if (!passThrough) {
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexHexNum, val, line, pos - val.length()));
-					currState = H;
+					type = lexHexNum;
+					currState = NumSuf;
 				}
 				break;
 			}
@@ -875,88 +754,70 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				while(isxdigit(ch) || ch == '.' || ch == 'p' || ch == 'P') {
 					if (isxdigit(ch)) {
-						//if (val[0] == '.')
-						//	val = '0' + val;
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isxdigit(ch) || ch == 'p' || ch == 'P' || ch == '.');
-                        if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-							val += ch;
-							file.get();
-							pos++;
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						file.get();
+						val += ch;
+						currState = ErrorLexemEnd;
+						break;
 					}
 					else if (ch == 'p' || ch == 'P')
 					{
 						passThrough = true;
 						if (val.length() == 3 && val[2] == '.') {
 							Errors.push_back(ErrorMessage(line, pos, "Expected a mantis!"));
-							do {
-								val += ch;
-								file.get();
-								pos++;
-								ch = file.peek();
-							} while (isxdigit(ch) || ch == 'p' || ch == 'P' || ch == '.');
-							if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-								val += ch;
-								file.get();
-								pos++;
-							}
-							lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-							currState = H;
+							currState = ErrorLexemEnd;
 						}
 						else {
 							currState = HexNumWithExp;
 							file.get();
 							val += ch;
-							pos++;
-							break;
 						}
+						break;
 					}
 				}
 				if (!passThrough) {
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexHexNumWithDot, val, line, pos - val.length()));
-					currState = H;
+					type = lexHexNumWithDot;
+					currState = FloatSuf;
 				}
 				break;
 			}
 			case HexNumWithExp: {
 				ch = file.peek();
 
-				if(ch == '-' || ch == '+' || isxdigit(ch)) {
-					currState = HexNumWithExpMan;
+				if(ch == '-' || ch == '+') {
 					file.get();
 					val += ch;
-					pos++;
+					currState = HexNumWithExpSign;
+				}
+				else if ( isxdigit(ch)) {
+					currState = HexNumWithExpMan;
 				}
 				else {
 					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
-					file.get();
-					val += ch;
-					lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-					pos++;
-					currState = H;
+					currState = ErrorLexemEnd;
 				}
 				break;
 			}
+			case HexNumWithExpSign: {
+				ch = file.peek();
+
+				if (isxdigit(ch)) {
+					file.get();
+					val += ch;
+					currState = HexNumWithExpMan;
+				}
+				else {
+                	Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					currState = ErrorLexemEnd;
+                }
+				break;
+            }
 			case HexNumWithExpMan: {
 				ch = file.peek();
 				passThrough = false;
@@ -965,48 +826,22 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if (isxdigit(ch)) {
 						file.get();
 						val += ch;
-						pos++;
 						ch = file.peek();
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						if (val.find(".") != -1)
+						if (val.find(".") != std::string::npos)
 							Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
 						else
 							Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isxdigit(ch) || ch == 'p' || ch == 'P' || ch == '.');
-						if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-							val += ch;
-							file.get();
-							pos++;
-						}
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						file.get();
+						val += ch;
+						currState = ErrorLexemEnd;
 					}
 				}
-				if (!isxdigit(val[val.length() - 1])) {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
-					if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-					currState = H;
-				}
-				else if (!passThrough) {
-                    if (ch == 'L' || ch == 'l' || ch == 'F' || ch == 'f') {
-						val += ch;
-						file.get();
-						pos++;
-					}
-					lexList.push_back(Lexem(lexHexNumWithDot, val, line, pos - val.length()));
-					currState = H;
+				if (!passThrough) {
+					type = lexHexNumWithDot;
+					currState = FloatSuf;
 				}
 				break;
 			}
@@ -1018,45 +853,161 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if(ch != '0' && ch != '1') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Expected a binary value!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch));
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						currState = ErrorLexemEnd;
 					}
 					else if (ch == '.') {
 						passThrough = true;
 						Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
-						do {
-							val += ch;
-							file.get();
-							ch = file.peek();
-							pos++;
-						} while (isdigit(ch) || ch == '.');
-						lexList.push_back(Lexem(lexError, val, line, pos - val.length()));
-						currState = H;
+						currState = ErrorLexemEnd;
 					}
 					else {
-						val += ch;
 						file.get();
+						val += ch;
 						ch = file.peek();
-						pos++;
 					}
 				}
 				if (!passThrough) {
-					lexList.push_back(Lexem(lexBinNum, val, line, pos - val.length()));
-					currState = H;
+					type = lexBinNum;
+					currState = NumSuf;
 				}
+				break;
+			}
+			case Dot: {
+				ch = file.peek();
+
+				if (isdigit(ch)) {
+					currState = NumWithDot;
+				}
+				else {
+					type = lexMembAcsOp;
+					currState = F;
+				}
+				break;
+			}
+			case Colon: {
+				ch = file.peek();
+
+				if (ch == ':') {
+					file.get();
+					val += ch;
+					type = lexDblColons;
+				}
+				else
+					type = lexColons;
+				currState = F;
+				break;
+			}
+			case Plus: {
+				ch = file.peek();
+
+				if (ch == '+') {
+					file.get();
+					val += ch;
+					type = lexIncrem;
+				}
+				else if (ch == '=') {
+					file.get();
+					val += ch;
+					type = lexAssgnOp;
+				}
+				else
+					type = lexArithmOp;
+				currState = F;
+			}
+			case Minus: {
+				ch = file.peek();
+
+				if (ch == '-') {
+					file.get();
+					val += ch;
+					type = lexDecrem;
+				}
+				else if (ch == '=') {
+					file.get();
+					val += ch;
+					type = lexAssgnOp;
+				}
+				else if (ch == '>') {
+					file.get();
+					val += ch;
+					type = lexMembAcsOp;
+				}
+				else
+					type = lexArithmOp;
+				currState = F;
+				break;
+			}
+			case Assign: {
+				ch = file.peek();
+
+				if (ch == '=') {
+					file.get();
+					val += ch;
+					type = lexAssgnOp;
+				}
+				currState = F;
+				break;
+			}
+			case Amp: {
+				ch = file.peek();
+
+				if (ch == '&') {
+					file.get();
+					val += ch;
+					type = lexLogicOp;
+				}
+				else if (ch == '=') {
+					file.get();
+					val += ch;
+					type = lexAssgnOp;
+				}
+				else
+					type = lexAmpersand;
+				currState = F;
+				break;
+			}
+			case Div: {
+				ch = file.peek();
+
+				if (ch == '=') {
+					file.get();
+					val += ch;
+					type = lexAssgnOp;
+					currState = F;
+				}
+				else if (ch == '\\') {
+					file.get();
+					currState = LineComment;
+				}
+				else if (ch == '*') {
+					file.get();
+					pos += 2;
+					currState = WideComment;
+				}
+				else {
+					type = lexArithmOp;
+					currState = F;
+                }
+				break;
+			}
+			case Or: {
+				ch = file.peek();
+
+				if (ch == '|') {
+					file.get();
+					val += ch;
+					type = lexLogicOp;
+				}
+				else
+					type = lexArithmOp;
+				currState = F;
 				break;
 			}
 			case LineComment: {
 				do {
 					ch = file.get();
 				} while (ch != '\n');
-				line++;
+				++line;
 				pos = 1;
 				currState = H;
 				break;
@@ -1064,9 +1015,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 			case WideComment: {
 				do {
 					ch = file.get();
-					pos++;
+					++pos;
 					if (ch == '\n') {
-						line++;
+						++line;
 						pos = 1;
 					}
 					else if (ch == file.eof()) {
@@ -1078,36 +1029,35 @@ list<Lexem> Scanner::scan(const std::string& path)
 			}
 			case WideCommentEnd: {
 				ch = file.get();
+
 				if (ch == '/') {
 					currState = H;
-					pos++;
+					++pos;
 				}
 				else if (ch == file.eof()) {
 					Errors.push_back(ErrorMessage(line, pos, "Expected end of comment!"));
 				}
 				else {
 					currState = WideComment;
-					pos++;
+					++pos;
 				}
 			}
 			case Less: {
 				ch = file.peek();
 
 				if (ch == '=') {
-					val += ch;
 					file.get();
-					pos++;
+					val += ch;
 					currState = LessEq;
 				}
 				else if (ch == '<') {
-					val += ch;
 					file.get();
-					pos++;
+					val += ch;
 					currState = LeftShift;
 				}
 				else {
-					lexList.push_back(Lexem(lexLess, val, line, pos - 1));
-					currState = H;
+					type = lexLAngleBracket;
+					currState = F;
 				}
 				break;
 			}
@@ -1115,54 +1065,43 @@ list<Lexem> Scanner::scan(const std::string& path)
 				ch = file.peek();
 
 				if (ch == '>') {
-					val += ch;
 					file.get();
-					pos++;
-					lexList.push_back(Lexem(lexLessEqGreater, val, line, pos - 2));
+					val += ch;
 				}
-				else {
-					lexList.push_back(Lexem(lexLessOrEq, val, line, pos - 1));
-				}
-				pos++;
-				currState = H;
+				type = lexCompOp;
+				currState = F;
 				break;
 			}
 			case LeftShift: {
 				ch = file.peek();
 
 				if (ch == '=') {
-					val += ch;
 					file.get();
-					pos++;
-					lexList.push_back(Lexem(lexLShiftEq, val, line, pos - 2));
+					val += ch;
+					type = lexAssgnOp;
 				}
-				else {
-					lexList.push_back(Lexem(lexLShift, val, line, pos - 1));
-				}
-				pos++;
-				currState = H;
+				else
+					type = lexArithmOp;
+				currState = F;
 				break;
 			}
 			case Greater: {
 				ch = file.peek();
 
 				if (ch == '=') {
-					val += ch;
 					file.get();
-					pos++;
-					lexList.push_back(Lexem(lexGreaterOrEq, val, line, pos - 1));
-					pos++;
-					currState = H;
+					val += ch;
+					type = lexCompOp;
+					currState = F;
 				}
 				else if (ch == '>') {
-					val += ch;
 					file.get();
-					pos++;
+					val += ch;
 					currState = RightShift;
 				}
 				else {
-					lexList.push_back(Lexem(lexGreater, val, line, pos - 1));
-					currState = H;
+					type = lexRAngleBracket;
+					currState = F;
                 }
 				break;
 			}
@@ -1170,16 +1109,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 				ch = file.peek();
 
 				if (ch == '=') {
-					val += ch;
 					file.get();
-					pos++;
-					lexList.push_back(Lexem(lexRShiftEq, val, line, pos - 2));
+					val += ch;
+					type = lexCompOp;
 				}
-				else {
-					lexList.push_back(Lexem(lexRShift, val, line, pos - 1));
-				}
-				pos++;
-				currState = H;
+				else
+					type = lexArithmOp;
+				currState = F;
 				break;
 			}
 			case Directive: {
@@ -1188,11 +1124,31 @@ list<Lexem> Scanner::scan(const std::string& path)
 					prevChar = ch;
 					ch = file.get();
 					if (ch == '\\') {
-						line++;
+						++line;
 					}
 				} while (ch != '\n' && prevChar != '\\');
-				line++;
+				++line;
 				pos = 1;
+				currState = H;
+				break;
+			}
+			case F: {
+				lexList.push_back(Lexem(type, val, line, pos));
+				pos += val.length();
+				currState = H;
+				break;
+			}
+			case ErrorLexemEnd : {
+				ch = file.peek();  //checking if next symbol is correct lexem
+
+				if (isCharAllowed(ch)) {
+					currState = F;
+				}
+				else {
+					file.get();
+					val += ch;
+				}
+				break;
 			}
 		}
 	} while(!file.eof());
@@ -1297,4 +1253,63 @@ void Scanner::initHashTable()
 list<ErrorMessage> Scanner::getErrors()
 {
 	return Errors;
+}
+
+bool Scanner::isCharAllowed(char ch)
+{
+	if (ch == ' ')
+		return true;
+	else if (ch == ';')
+		return true;
+	else if (ch == '\t')
+		return true;
+	else if (ch == '\n')
+		return true;
+	else if (ch == ',')
+		return true;
+	else if (ch == '+')
+		return true;
+	else if (ch == '-')
+		return true;
+	else if (ch == '*')
+		return true;
+	else if (ch == '/')
+		return true;
+	else if (ch == '=')
+		return true;
+	else if (ch == '<')
+		return true;
+	else if (ch == '>')
+		return true;
+	else if (ch == '.')
+		return true;
+	else if (ch == '&')
+		return true;
+	else if (ch == '!')
+		return true;
+	else if (ch == ':')
+		return true;
+	else if (ch == '?')
+		return true;
+	else if	(ch == '~')
+		return true;
+	else if (ch == '%')
+		return true;
+	else if (ch == '^')
+		return true;
+	else if (ch == '|')
+		return true;
+	else if (ch == '(')
+		return true;
+	else if (ch == ')')
+		return true;
+	else if (ch == '[')
+		return true;
+	else if (ch == ']')
+		return true;
+	else if (ch == '{')
+		return true;
+	else if (ch == '}')
+		return true;
+	return false;
 }

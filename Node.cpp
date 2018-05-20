@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #pragma hdrstop
 
+#include "stdafx.h"
 #include "Node.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-__fastcall Node::Node(std::string &val)
+Node::Node(std::string &val)
 {
 	value = val;
 	left = NULL;

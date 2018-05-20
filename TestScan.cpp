@@ -12,11 +12,15 @@
 #include <iostream.h>
 #include "Scanner.h"
 #include <fstream.h>
+#include <conio.h>
+#include <windows.h>
 
  int _tmain(int argc, _TCHAR* argv[])
 {
+	SetConsoleCP(1251); // Ввод с консоли в кодировке 1251
+	SetConsoleOutputCP(1251); // Вывод на консоль в кодировке 1251. Нужно только будет изменить шрифт консоли на Lucida Console или Consolas
 	Scanner scanner = Scanner();
-	std::string filePath = "L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Scanner//test.txt";
+	std::string filePath = "L://Embarcadero RAD Studio XE8 22.0.19027.8951 Architect//PROJECTS//Копия Scanner//TestFile.cpp";
 	list<Lexem> lexList = scanner.scan(filePath);
 
 	//=================
@@ -24,22 +28,23 @@
 	for(list<Lexem>::iterator iter = lexList.begin();
 			iter != lexList.end(); ++iter)
 	{
-		std::cout << iter->getValue() << " ";
+		std::cout << "Значення: ";
+		std::cout << iter->getValue() <<" ";
 		std::cout << iter->getLine() << " ";
 		std::cout << iter->getPosition() << " ";
-		std::cout << iter->getLine() << " ";
 		std::cout << iter->getLexType() << std::endl;
 	}
 	//===============
 
-	//std::cout << sizeof(filePath);
-
-	int b = 011;
-	std::cout << b;
-
-	//double c = 1.;
-    //char cc = 'dhh ';
-	int a = 0;
-	std::cin >> a;
+	list<ErrorMessage> errors = scanner.getErrors();
+	std::cout << std::endl;
+	for(list<ErrorMessage>::iterator iter = errors.begin();
+			iter != errors.end(); ++iter)
+	{
+		std::cout << iter->getLine() << " ";
+		std::cout << iter->getPos() << " ";
+		std::cout << iter->getText() << std::endl;
+	}
+	getch();
 	return 0;
 }

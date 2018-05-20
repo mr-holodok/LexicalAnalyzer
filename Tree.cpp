@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #pragma hdrstop
 
+#include "stdafx.h"
 #include "Tree.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-__fastcall Tree::Tree()
+Tree::Tree()
 {
 	first = NULL;
 }

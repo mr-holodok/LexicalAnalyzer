@@ -1,7 +1,8 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #pragma hdrstop
 
+#include "stdafx.h"
 #include "Lexem.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -16,69 +17,44 @@
 
 std::string Lexem::getLexType()
 {
+	std::string s;
 	switch(this->lexType) {
-		case lexIdentif: return "Ідентифікатор";
-		case lexKeyWord: return "Ключове слово";
-		case lexComma: return "Кома";
-		case lexDot: return "Крапка";
-		case lexColons: return "Двокрапка";
-		case lexDblColons: return "Подвійна двокрапка";
-		case lexSemiColon: return "Крапка з комою";
-		case lexLParenthesis: return "Ліва кругова дужка";
-		case lexRParenthesis: return "Права кругова дужка";
-		case lexLBracket: return "Ліва квадратна дужка";
-		case lexRBracket: return "Права квадратна дужка";
-		case lexLBrace: return "Ліва фігурна дужка";
-		case lexRBrace: return "Права фігурна дужка";
-		case lexQuotes: return "Подвійні лапки";
-		case lexQuotation: return "Одинарні лапки";
-		case lexTilde: return "Тільда";
-		case lexQuestion: return "знак питання";
-		case lexPlus: return "Знак плюс";
-		case lexMinus: return "Знак мінус";
-		case lexStar: return "Знак зірочка";
-		case lexDiv: return "Знак ділення";
-		case lexEquating: return "Знак дорівнює";
-		case lexPlusEq: return "Додавання з присвоєнням";
-		case lexMinusEq: return "Віднімання з присвоєнням";
-		case lexMultEq: return "Множення з присвоєнням";
-		case lexDivEq: return "Ділення з присвоєнням";
-		case lexEqual: return "Знак рівності";
-		case lexLess: return "Знак менше";
-		case lexGreater: return "Знак більше";
-		case lexExclam: return "Знак оклику";
-		case lexLessOrEq: return "Менше або дорівнює";
-		case lexGreaterOrEq: return "Більше або дорівнює";
-		case lexNotEq: return "Не дорівнює";
-		case lexLessEqGreater: return "Трьох рівневе порівняння";
-		case lexIncrem: return "Інкремент";
-		case lexDecrem: return "Декремент";
-		case lexArrow: return "Стрілка";
-		case lexAmpersand: return "Знак амперсанд";
-		case lexAmpersandEq: return "Бітове І з присвоєнням";
-		case lexMod: return "Остача від ділення";
-		case lexModEq: return "Остача від ділення з присвоєнням";
-		case lexLShift: return "Зсув вліво";
-		case lexRShift: return "Зсув вправо";
-		case lexLShiftEq: return "Зсув вліво з присвоєнням";
-		case lexRShiftEq: return "Зсув вправо з присвоєнням";
-		case lexXor: return "Виключаюче АБО";
-		case lexXorEq: return "Виключаюче АБО з присвоєнням";
-		case lexBitOr: return "Бітове АБО";
-		case lexBitOrEq: return "Бітове АБО з присвоєнням";
-		case lexAnd: return "Логічне І";
-		case lexOr: return "Логічне АБО";
-		case lexStringConst: return "Рядкова константа";
-		case lexChar: return "Символ";
-		case lexUChar: return "Символ UTF-8";
-		case lexDecNum: return "Десяткове константне число";
-		case lexOctNum: return "Вісімкове константне число";
-		case lexBinNum: return "Бінарне константне число";
-		case lexHexNum: return "Шістнадцяткове константне число";
-		case lexNumWithDot: return "Десяткове константне дійсне число";
-		case lexHexNumWithDot: return "Шістнадцяткове дійсне константне число";
-		case lexError: return "Лексема з помилкою";
-    }
+		case lexIdent: { std::string s ("Ідентифікатор"); return s;}
+		case lexKeyWord: { std::string s ("Ключове слово"); return s; }
+		case lexComma: { std::string s ("Кома"); return s; }
+		case lexColons: { std::string s ("Двокрапка"); return s; }
+		case lexDblColons: { std::string s ("Подвійна двокрапка"); return s; }
+		case lexSemiColon: { std::string s ("Крапка з комою"); return s; }
+		case lexLRoundBracket: { std::string s ("Ліва кругова дужка"); return s; }
+		case lexRRoundBracket: { std::string s ("Права кругова дужка"); return s; }
+		case lexLSquareBracket: { std::string s ("Ліва квадратна дужка"); return s; }
+		case lexRSquareBracket: { std::string s ("Права квадратна дужка"); return s; }
+		case lexLFigureBracket: { std::string s ("Ліва фігурна дужка"); return s; }
+		case lexRFigureBracket: { std::string s ("Права фігурна дужка"); return s; }
+		case lexQuestion: { std::string s ("знак питання"); return s; }
+		case lexAmpersand: { std::string s ("Знак амперсанд"); return s; }
+		case lexStar: { std::string s ("Знак зірочка"); return s; }
+		case lexArithmOp: { std::string s ("Арифметичний оператор"); return s; }
+		case lexMembAcsOp: { std::string s ("Оператор доступу"); return s; }
+		case lexLogicOp: { std::string s ("Логічний оператор"); return s; }
+		case lexAssgnOp: { std::string s ("Оператор присвоєння"); return s; }
+		case lexLAngleBracket: { std::string s ("Ліва кутова дужка"); return s; }
+		case lexRAngleBracket: { std::string s ("Права кутова дужка"); return s; }
+		case lexCompOp: { std::string s ("Оператор порівняння"); return s; }
+		case lexIncrem: { std::string s ("Інкремент"); return s; }
+		case lexDecrem: { std::string s ("Декремент"); return s; }
+		case lexStringConst: { std::string s ("Рядкова константа"); return s; }
+		case lexChar: { std::string s ("Символ"); return s; }
+		case lexUChar: { std::string s ("Символ UTF-8"); return s; }
+		case lexDecNum: { std::string s ("Десяткове константне число"); return s; }
+		case lexOctNum: { std::string s ("Вісімкове константне число"); return s; }
+		case lexBinNum: { std::string s ("Бінарне константне число"); return s; }
+		case lexHexNum: { std::string s ("Шістнадцяткове константне число"); return s; }
+		case lexNumWithDot: { std::string s ("Десяткове константне дійсне число"); return s; }
+		case lexHexNumWithDot: { std::string s ("Шістнадцяткове дійсне константне число"); return s; }
+		case lexError: { std::string s ("Лексема з помилкою"); return s; }
+	}
+	return s;
 }
 
 std::string Lexem::getValue()

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.774,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.228,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.027,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scaner.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.687,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.935,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Node.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.819,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\LinkedDataList.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.699,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Project1.cbproj=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.618,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\DataItem.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.288,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\DataItem.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.897,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\DataItem.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.571,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Lexem.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.570,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Lexem.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.228,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Lexem.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.962,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTable.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.743,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTable.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.197,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTable.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.931,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.h=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scaner.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.760,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scaner.cpp=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File2.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.414,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTable.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.279,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.789,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Tree.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.839,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\ErrorMessage.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.150,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTable.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.326,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.197,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.465,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scaner.h=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.697,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.149,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.109,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.695,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.275,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.759,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.687,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Scanner.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.977,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\TestScan.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.228,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\TestScan.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.322,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\TestScan.cpp=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.839,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\ErrorMessage.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.935,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Node.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.260,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.570,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Lexem.h=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.962,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTest.cpp=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.243,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\HashTest.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.213,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.056,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Project1PCH1.h=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Project1PCH1.h=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.963,=C:\Documents and Settings\Kolia\Мои документы\Embarcadero\Studio\Projects\File2.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.638,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.819,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\LinkedDataList.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.751,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.506,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.789,L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Tree.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.794,=L:\Embarcadero RAD Studio XE8 22.0.19027.8951 Architect\PROJECTS\Scanner\Unit1.cpp</Transaction>
+  </Transactions>
+</BorlandProject>

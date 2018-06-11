@@ -1,0 +1,111 @@
+object ScanForm: TScanForm
+  Left = 0
+  Top = 0
+  Caption = 'ScanForm'
+  ClientHeight = 412
+  ClientWidth = 754
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Splitter1: TSplitter
+    Left = 540
+    Top = 0
+    Height = 412
+    Align = alRight
+    ExplicitLeft = 384
+    ExplicitTop = 168
+    ExplicitHeight = 100
+  end
+  object StringGrid1: TStringGrid
+    Left = 543
+    Top = 0
+    Width = 211
+    Height = 412
+    Align = alRight
+    ColCount = 2
+    DefaultColWidth = 100
+    FixedRows = 0
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 540
+    Height = 412
+    Align = alClient
+    TabOrder = 1
+    ExplicitLeft = 288
+    ExplicitTop = 200
+    ExplicitWidth = 185
+    ExplicitHeight = 41
+    object RichEdit1: TRichEdit
+      Left = 1
+      Top = 30
+      Width = 538
+      Height = 261
+      Align = alClient
+      Enabled = False
+      Font.Charset = RUSSIAN_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Lines.Strings = (
+        'RichEdit1')
+      ParentFont = False
+      TabOrder = 0
+      Zoom = 100
+      ExplicitLeft = -1
+      ExplicitTop = 31
+      ExplicitHeight = 381
+    end
+    object ToolBar1: TToolBar
+      Left = 1
+      Top = 1
+      Width = 538
+      Height = 29
+      ButtonHeight = 36
+      ButtonWidth = 36
+      Caption = 'ToolBar1'
+      TabOrder = 1
+      object ToolButton1: TToolButton
+        Left = 0
+        Top = 0
+        Caption = 'ToolButton1'
+        ImageIndex = 0
+        OnClick = ToolButton1Click
+      end
+      object ToolButton2: TToolButton
+        Left = 36
+        Top = 0
+        Width = 8
+        Caption = 'ToolButton2'
+        ImageIndex = 1
+        Style = tbsSeparator
+      end
+      object ToolButton3: TToolButton
+        Left = 44
+        Top = 0
+        Caption = 'ToolButton3'
+        ImageIndex = 1
+      end
+    end
+    object StringGrid2: TStringGrid
+      Left = 1
+      Top = 291
+      Width = 538
+      Height = 120
+      Align = alBottom
+      ColCount = 3
+      DefaultColWidth = 100
+      RowCount = 2
+      TabOrder = 2
+    end
+  end
+end

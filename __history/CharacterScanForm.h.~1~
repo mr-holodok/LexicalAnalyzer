@@ -1,0 +1,35 @@
+//---------------------------------------------------------------------------
+
+#ifndef CharacterScanFormH
+#define CharacterScanFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <CharacterScanner.h>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Grids.hpp>
+#include <Vcl.ToolWin.hpp>
+//---------------------------------------------------------------------------
+class TForm3 : public TForm
+{
+__published:	// IDE-managed Components
+	TStringGrid *StringGrid1;
+	TSplitter *Splitter1;
+	TPanel *Panel1;
+	TRichEdit *RichEdit1;
+	TToolBar *ToolBar1;
+	TToolButton *ToolButton1;
+	TToolButton *ToolButton2;
+	TToolButton *ToolButton3;
+private:	// User declarations
+	CharacterScanner scanner;
+public:		// User declarations
+	__fastcall TForm3(TComponent* Owner, const AnsiString &path);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TForm3 *Form3;
+//---------------------------------------------------------------------------
+#endif

@@ -1,13 +1,11 @@
 //---------------------------------------------------------------------------
-#pragma unmanaged
 #pragma hdrstop
 
-#include "stdafx.h"
 #include "ErrorMessage.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-ErrorMessage::ErrorMessage(unsigned int l, unsigned int p, char* msg)
+ErrorMessage::ErrorMessage(unsigned int l, unsigned int p, AnsiString msg)
 {
 	line = l;
 	pos = p;
@@ -18,7 +16,7 @@ ErrorMessage::ErrorMessage(unsigned int l, unsigned int p)
 {
 	line = l;
 	pos = p;
-	message = "Unrecognized lexem!";
+	message = "Нерозпізнана лексема!";
 }
 //---------------------------------------------------------------------------
 unsigned int ErrorMessage::getLine()
@@ -31,7 +29,7 @@ unsigned int ErrorMessage::getPos()
 	return pos;
 }
 //---------------------------------------------------------------------------
-std::string ErrorMessage::getText()
+AnsiString ErrorMessage::getText()
 {
 	return message;
 }

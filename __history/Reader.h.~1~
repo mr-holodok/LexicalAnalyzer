@@ -1,0 +1,20 @@
+//---------------------------------------------------------------------------
+
+#ifndef ReaderH
+#define ReaderH
+
+#include <System.hpp>
+//---------------------------------------------------------------------------
+
+class Reader
+{
+public:
+	Reader(const UnicodeString& str);
+	char nextChar();
+	char peek();
+private:
+	UnicodeString *text;
+	unsigned int pointer;
+};
+
+#endif

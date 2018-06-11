@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
-#pragma unmanaged
 #pragma hdrstop
 
-#include "stdafx.h"
 #include "DataItem.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C9D2B3CB-BF13-41E3-8A47-7A47FB0DC65A}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="LexAnalyzer.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="LexAnalyzer">
+        <MSBuild Projects="LexAnalyzer.cbproj"/>
+    </Target>
+    <Target Name="LexAnalyzer:Clean">
+        <MSBuild Projects="LexAnalyzer.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LexAnalyzer:Make">
+        <MSBuild Projects="LexAnalyzer.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="LexAnalyzer"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="LexAnalyzer:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="LexAnalyzer:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

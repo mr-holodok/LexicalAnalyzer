@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
-#pragma unmanaged
 #pragma hdrstop
 
-#include "stdafx.h"
 #include "Scanner.h"
 #include "fstream.h"
 #include <string>
@@ -14,41 +12,28 @@ HashTable Scanner::hashTable = HashTable();
 
 Scanner::Scanner()
 {
-	//if(hashTable == NULL)
 	initHashTable();
-	/*==============
-	The hash table must be initialized ONLY 1 TIME!
-	==============*/
-	initAuto();
 }
 
-list<Lexem> Scanner::scan(const std::string& path)
+vector<Lexem> Scanner::scan(const AnsiString &path)
 {
-	//================================
-	char *filePath = new char[path.length() + 1];
-	std::strcpy(filePath, path.c_str());
 	//for opening file required char* instead of string
 
 	ifstream file; //file that contains text of program
-	file.open(filePath);
-	if (!file) {
-		std::cout << "File not found!";
-	}
-	//this is test opening
-	//final functions will be realized in other method or class
-	//================================*/
+	file.open(path.c_str());
 
-	list<Lexem> lexList;
+	vector<Lexem> lexList;
 
-	//if(tree) delete tree;
 	tree = Tree();
 
 	Errors.clear();
 
-	//std::string str = "";
+	initAuto();
+
 	char ch;              //character for reading of each symbol
 	std::string val;      //string for lexems longer than 1 symbol
 	bool passThrough = false;
+	bool newline = false;
 	tLex type;
 
 	do //loop to end of file. Reads every character
@@ -205,6 +190,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 							ch == 95 || (ch >= 97 && ch <= 122)) {
 					file.get();
 					val += ch;
+					ch = file.peek();
 				}
 				if (isCharAllowed(ch)) {
 					bool keyWord = hashTable.find(val);
@@ -218,9 +204,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = F;
 				}
 				else {
-					Errors.push_back(ErrorMessage(line, pos, "Uncorrect format of Identifier!"));
+					Errors.push_back(ErrorMessage(line, pos, "Невірний формат ідентифікатора!"));
 					currState = ErrorLexemEnd;
-                                }
+				}
 				break;
 			}
 			case UCharOrID: {
@@ -263,7 +249,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				if (ch == '\'' && val.length() > 7) {
 						file.get();
 						val += ch;
-						Errors.push_back(ErrorMessage(line, pos, "UTF-8 Character is too long!"));
+						Errors.push_back(ErrorMessage(line, pos, "UTF-8 символ занадто довгий!"));
 						currState = F;
 				}
 				else if (ch == '\'') {
@@ -271,11 +257,12 @@ list<Lexem> Scanner::scan(const std::string& path)
 						val += ch;
 						type = lexUChar;
 						if (val.length() > 5)
-							Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
+							Errors.push_back(ErrorMessage(line, pos, "Попередження: мульти-символьна константа!"));
 						currState = F;
 				}
 				else if (ch == '\n') {
-						Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" ' \" to end a char!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується \" ' \" для закінчення символьної константи!"));
+						newline = true;
 						currState = F;
 				}
 				break;
@@ -298,7 +285,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = CharEnd;
 				}
 				else {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an escape char!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується керуючий символ!"));
 					currState = ErrorCharEnd;
 				}
 				val += ch;
@@ -320,7 +307,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 					}
 					ch = file.get();
 					val += ch;
-					Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
+					Errors.push_back(ErrorMessage(line, pos, "Попередження: мульти-символьна константа!"));
+					if (ch == '\n')
+						newline = true;
 					currState = F;
 				}
 				break;
@@ -343,18 +332,19 @@ list<Lexem> Scanner::scan(const std::string& path)
 					if (ch == '\'' && val.length() > 4) {
 						file.get();
 						val += ch;
-						Errors.push_back(ErrorMessage(line, pos, "Character is too long!"));
+						Errors.push_back(ErrorMessage(line, pos, "Символ занадто довгий!"));
 						currState = F;
 					}
 					else if (ch == '\'') {
 						file.get();
 						val += ch;
 						type = lexChar;
-						Errors.push_back(ErrorMessage(line, pos, "Warning: multi-character constant!"));
+						Errors.push_back(ErrorMessage(line, pos, "Попередження: мульти-символьна константа!"));
 						currState = F;
 					}
 					else if (ch == '\n') {
-						Errors.push_back(ErrorMessage(line, pos, "Expected a quotation \" ' \" to end a char!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується \" ' \" для закінчення символьної константи!"));
+						newline = true;
 						currState = F;
 					}
 				}
@@ -371,7 +361,8 @@ list<Lexem> Scanner::scan(const std::string& path)
 					ch = file.get();
 				}
 				if (ch == '\n') {
-						Errors.push_back(ErrorMessage(line, pos, "Expected a double quotation \' \" \' to end a string!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується \' \" \' для закінчення рядкової константи!"));
+						newline = true;
 						currState = F;
 				}
 				else {
@@ -391,11 +382,11 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if(isdigit(ch)) {
 					if (ch == '0') {
-						Errors.push_back(ErrorMessage(line, pos, "Uncorrect octal value!"));
+						Errors.push_back(ErrorMessage(line, pos, "Невірне вісімкове значення!"));
 						currState = ErrorLexemEnd;
 					}
 					else if (ch == '8' || ch == '9') {
-						Errors.push_back(ErrorMessage(line, pos, "Expected an octal number!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується вісімкова цифра!"));
 						currState = ErrorLexemEnd;
 					}
 					file.get();
@@ -417,15 +408,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = BinNum;
 				}
 				else if (isalpha(ch)) {
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
-					currState = ErrorLexemEnd;
-                                // ??добавить проверку следующего символа или перейти в суффиксы??
-                                //
-                                //==============
-                                //              ===============
-                                //==============               =================
-                                //              ===============
-                                //==============
+					currState = NumSuf;
 				}
 				else {
 				   type = lexDecNum;
@@ -481,7 +464,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos, "Ідентифікатор не може починатись з цифри!"));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -508,7 +491,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos, "Ідентифікатор не може починатись з цифри!"));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -530,7 +513,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos, "Ідентифікатор не може починатись з цифри!"));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -552,7 +535,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-                	Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+                	Errors.push_back(ErrorMessage(line, pos, "Ідентифікатор не може починатись з цифри!"));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -574,7 +557,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos, "Ідентифікатор не може починатись з цифри!"));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -596,7 +579,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 				}
 				else if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -613,7 +596,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if (isalpha(ch)) {
 					type = lexError;
-					Errors.push_back(ErrorMessage(line, pos, "Identifier can't start with number!"));
+					Errors.push_back(ErrorMessage(line, pos));
 					currState = ErrorLexemEnd;
 				}
 				else if (!isCharAllowed(ch)) {
@@ -637,7 +620,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
+						Errors.push_back(ErrorMessage(line, pos, "Занадто багато десяткових крапок!"));
 						file.get();
 						val += ch;
 						currState = ErrorLexemEnd;
@@ -647,7 +630,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					{
 						passThrough = true;
 						if (val.length() == 1 && val[0] == '.') {
-							Errors.push_back(ErrorMessage(line, pos, "Expected a mantis!"));
+							Errors.push_back(ErrorMessage(line, pos, "Очікується мантиса!"));
 							currState = ErrorLexemEnd;
 						}
 						else {
@@ -678,13 +661,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 					 currState = NumWithExpMan;
 				}
 				else {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується експонента!"));
 					currState = ErrorLexemEnd;
 				}
 				break;
 			}
 			case NumWithExpSign: {
-				ch = file.get();
+				ch = file.peek();
 
 				if (isdigit(ch)) {
 					file.get();
@@ -692,11 +675,11 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = NumWithExpMan;
 				}
                 else {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується експонента!"));
 					currState = ErrorLexemEnd;
 				}
 				break;
-            }
+			}
 			case NumWithExpMan: {
 				ch = file.peek();
 				passThrough = false;
@@ -710,9 +693,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 					else if (ch == '.') {
 						passThrough = true;
 						if (val.find(".") != std::string::npos)
-							Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
+							Errors.push_back(ErrorMessage(line, pos, "Занадто багато десяткових крапок!"));
 						else
-							Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
+							Errors.push_back(ErrorMessage(line, pos, "Десяткова крапка не може тут перебувати!"));
 						file.get();
 						val += ch;
 						currState = ErrorLexemEnd;
@@ -734,13 +717,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 						passThrough = true;
                         file.get();
 						val += ch;
-						Errors.push_back(ErrorMessage(line, pos, "Expected an octal value!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується вісімкова цифра!"));
 						currState = ErrorLexemEnd;
 						break;
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
+						Errors.push_back(ErrorMessage(line, pos, "Десяткова крапка не може тут перебувати!"));
 						file.get();
 						val += ch;
 						currState = ErrorLexemEnd;
@@ -764,7 +747,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 
 				if (!isxdigit(ch) && ch != '.' && ch != 'p' && ch != 'P') {
 					passThrough = true;
-					Errors.push_back(ErrorMessage(line, pos, "Expected a hex value!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується шістнадцяткова цифра!"));
 					currState = ErrorLexemEnd;
 				}
 
@@ -807,7 +790,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
+						Errors.push_back(ErrorMessage(line, pos, "Занадто багато десяткових крапок!"));
 						file.get();
 						val += ch;
 						currState = ErrorLexemEnd;
@@ -817,7 +800,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					{
 						passThrough = true;
 						if (val.length() == 3 && val[2] == '.') {
-							Errors.push_back(ErrorMessage(line, pos, "Expected a mantis!"));
+							Errors.push_back(ErrorMessage(line, pos, "Очікується мантиса!"));
 							currState = ErrorLexemEnd;
 						}
 						else {
@@ -846,7 +829,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = HexNumWithExpMan;
 				}
 				else {
-					Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується експонента!"));
 					currState = ErrorLexemEnd;
 				}
 				break;
@@ -860,7 +843,7 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = HexNumWithExpMan;
 				}
 				else {
-                	Errors.push_back(ErrorMessage(line, pos, "Expected an exponent!"));
+					Errors.push_back(ErrorMessage(line, pos, "Очікується експонента!"));
 					currState = ErrorLexemEnd;
                 }
 				break;
@@ -878,9 +861,9 @@ list<Lexem> Scanner::scan(const std::string& path)
 					else if (ch == '.') {
 						passThrough = true;
 						if (val.find(".") != std::string::npos)
-							Errors.push_back(ErrorMessage(line, pos, "Too many decimal points!"));
+							Errors.push_back(ErrorMessage(line, pos, "Занадто багато десяткових крапок!"));
 						else
-							Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
+							Errors.push_back(ErrorMessage(line, pos, "Десяткова крапка не може тут перебувати!"));
 						file.get();
 						val += ch;
 						currState = ErrorLexemEnd;
@@ -900,13 +883,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 				while (isdigit(ch) || ch == '.') {
 					if(ch != '0' && ch != '1') {
 						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Expected a binary value!"));
+						Errors.push_back(ErrorMessage(line, pos, "Очікується бінарна цифра!"));
 						currState = ErrorLexemEnd;
 						break;
 					}
 					else if (ch == '.') {
 						passThrough = true;
-						Errors.push_back(ErrorMessage(line, pos, "Decimal point is not allowed here!"));
+						Errors.push_back(ErrorMessage(line, pos, "Десяткова крапка не може тут перебувати!"));
 						currState = ErrorLexemEnd;
 						break;
 					}
@@ -1070,8 +1053,8 @@ list<Lexem> Scanner::scan(const std::string& path)
 						++line;
 						pos = 1;
 					}
-					else if (ch == -1) {
-						Errors.push_back(ErrorMessage(line, pos, "Expected end of comment!"));
+					else if (file.eof()) {
+						Errors.push_back(ErrorMessage(line, pos, "Очікується кінець коментаря!"));
 						break;
 					}
 				} while (ch != '*');
@@ -1085,8 +1068,8 @@ list<Lexem> Scanner::scan(const std::string& path)
 					currState = H;
 					++pos;
 				}
-				else if (ch == -1) {
-					Errors.push_back(ErrorMessage(line, pos, "Expected end of comment!"));
+				else if (file.eof()) {
+					Errors.push_back(ErrorMessage(line, pos, "Очікується кінець коментаря!"));
 				}
 				else {
 					currState = WideComment;
@@ -1186,7 +1169,13 @@ list<Lexem> Scanner::scan(const std::string& path)
 			}
 			case F: {
 				lexList.push_back(Lexem(type, val, line, pos));
-				pos += val.length();
+				if (!newline)
+					pos += val.length();
+				else {
+					++line;
+					pos = 1;
+					newline = false;
+                }
 				currState = H;
 				break;
 			}
@@ -1302,7 +1291,7 @@ void Scanner::initHashTable()
 	hashTable.insert("xor_eq");
 }
 
-list<ErrorMessage> Scanner::getErrors()
+vector<ErrorMessage> Scanner::getErrors()
 {
 	return Errors;
 }

@@ -1,0 +1,20 @@
+//---------------------------------------------------------------------------
+#pragma unmanaged
+#ifndef TreeH
+#define TreeH
+
+#include "Node.h"
+#include <System.hpp>
+//---------------------------------------------------------------------------
+
+class Tree
+{
+public:
+	Tree();
+	void AddNode(UnicodeString &val);
+	bool FindNode(UnicodeString &val);
+private:
+	Node* first;
+};
+
+#endif

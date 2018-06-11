@@ -1,0 +1,29 @@
+//---------------------------------------------------------------------------
+
+#ifndef FormFindH
+#define FormFindH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+//---------------------------------------------------------------------------
+class TFindForm : public TForm
+{
+__published:	// IDE-managed Components
+	TButton *Button1;
+	TButton *Button2;
+	TEdit *Edit1;
+	TLabel *Label1;
+	TRadioGroup *RadioGroup1;
+	TCheckBox *CheckBox1;
+	TCheckBox *CheckBox2;
+private:	// User declarations
+public:		// User declarations
+	__fastcall TFindForm(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TFindForm *FindForm;
+//---------------------------------------------------------------------------
+#endif

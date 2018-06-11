@@ -1,43 +1,24 @@
 //---------------------------------------------------------------------------
 
+#include <vcl.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-
-__fastcall HashTable::HashTable()
+#pragma link "AdvMemo"
+#pragma resource "*.dfm"
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
 {
-	for(int i = 0; i < size; i++)
-		hashArray[i] = NULL;
-}
+	StringGrid2->Cells[0][0] = "№ Помилки";
+	StringGrid2->Cells[1][0] = "Текст помилки";
+	StringGrid2->Cells[2][0] = "Місце у вихідному тексті";
 
-double HashTable::generateKey(std::string value)
-{
-	double key = value[0];
-	for(int i = 1; i < value.length(); i++)
-	{
-		int letter = value[i];
-		key = key * 37 + letter;
-	}
-	return key;
+	StringGrid1->Cells[0][0] = "Тип лексеми";
+	StringGrid1->Cells[1][0] = "Значення лексеми";
 }
+//---------------------------------------------------------------------------
 
-int HashTable::hashFunction(double key)
-{
-	return (int)(key - ((int)(key / size)) * size) ;
-}
-
-bool HashTable::find(std::string value)
-{
-	int index = hashFunction(generateKey(value));
-	if (hashArray[index].getValue() == value) return true;
-	else return false;
-}
-
-void HashTable::insert(std::string value)
-{
-	DataItem item = DataItem(generateKey(value), value);
-	int index = hashFunction(item.getKey());
-	hashArray[index] = item;
-}

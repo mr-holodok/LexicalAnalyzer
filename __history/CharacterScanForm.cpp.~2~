@@ -1,0 +1,70 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "CharacterScanForm.h"
+#include "MainForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TScanForm *ScanForm;
+//---------------------------------------------------------------------------
+__fastcall TScanForm::TScanForm(TComponent* Owner, const AnsiString &path)
+	: TForm(Owner)
+{
+	scanner = CharacterScanner();
+	scanner.initAuto(path);
+	TForm1 *parent = static_cast<TForm1*>(Owner);
+	RichEdit1->Text = parent->AdvMemo1->Lines->Text;
+}
+//---------------------------------------------------------------------------
+void __fastcall TScanForm::ToolButton1Click(TObject *Sender)
+{
+	TempLexem lexem = scanner.scan();
+	AnsiString value = AnsiString(lexem.val->c_str());
+	StringGrid1->Cells[1][0] = value;
+	StringGrid1->Cells[1][0] = lexem.ch;
+
+	if (lexem.errorMessage != NULL) {
+		StringGrid2->RowCount += 1;
+		int row = StringGrid2->RowCount;
+		StringGrid2->Cells[0][row - 1] = row;
+		StringGrid2->Cells[1][row - 1] = lexem.errorMessage->getText();
+		StringGrid2->Cells[0][row - 1] = lexem.errorMessage->getLine() + ": " +
+			lexem.errorMessage->getPos();
+	}
+
+	if (lexem.state == cPeeked) {
+		RichEdit1->SelStart = RichEdit1->Text.Pos(lexem.ch);
+		RichEdit1->SelLength = 1;
+		RichEdit1->SelAttributes->Color = clBlue;
+	}
+	else if (lexem.state == cGot) {
+		RichEdit1->SelStart = RichEdit1->Text.Pos(lexem.ch);
+		RichEdit1->SelLength = 1;
+		RichEdit1->SelAttributes->Color = clBlue;
+		RichEdit1->SelAttributes->Style = TFontStyles() << fsBold;
+	}
+	else if (lexem.state == cErrored) {
+		RichEdit1->SelStart = RichEdit1->Text.Pos(lexem.ch);
+		RichEdit1->SelLength = 1;
+		RichEdit1->SelAttributes->Color = clRed;
+		RichEdit1->SelAttributes->Style = TFontStyles() << fsBold;
+	}
+	else if (lexem.state == cDetected) {
+		RichEdit1->SelStart = RichEdit1->Text.Pos(value);
+		RichEdit1->SelLength = value.Length();
+		RichEdit1->SelAttributes->Color = clGreen;
+		RichEdit1->SelAttributes->Style = TFontStyles() << fsBold;
+	}
+	else if (lexem.state == cAborted) {
+		RichEdit1->SelStart = RichEdit1->Text.Pos(lexem.ch);
+		RichEdit1->SelLength = 1;
+		RichEdit1->SelAttributes->Color = clBlack;
+	}
+	else if (lexem.state == cEnd) {
+		this->Close();
+	}
+}
+//---------------------------------------------------------------------------

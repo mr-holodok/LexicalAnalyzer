@@ -1,0 +1,23 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+
+#include "HashTable.h"
+#include <System.hpp>
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+HashTable::HashTable() {}
+
+bool HashTable::find(const UnicodeString &value)
+{
+	int index = hashFunction(value);
+	LinkedDataList *list = &hashArray[index];
+	return (*list).find(value);
+}
+
+void HashTable::insert(const UnicodeString &value)
+{
+	int index = hashFunction(value);
+	LinkedDataList *list = &hashArray[index];
+	(*list).insert(value);
+}

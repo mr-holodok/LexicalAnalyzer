@@ -4,19 +4,20 @@
 #define ErrorMessageH
 
 #include <string>
+#include <System.hpp>
 //---------------------------------------------------------------------------
 
 class ErrorMessage
 {
 public:
-	ErrorMessage(unsigned int l, unsigned int p, char* msg);
+	ErrorMessage(unsigned int l, unsigned int p, AnsiString msg);
 	ErrorMessage(unsigned int l, unsigned int p);
 	unsigned int getLine();
 	unsigned int getPos();
-	std::string getText();
+	AnsiString getText();
 private:
 	unsigned int pos, line;
-	char* message;
+	AnsiString message;
 };
 
 #endif

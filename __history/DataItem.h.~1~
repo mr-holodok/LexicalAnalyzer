@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-
+#pragma unmanaged
 #ifndef DataItemH
 #define DataItemH
 
@@ -8,12 +8,14 @@
 class DataItem
 {
 private:
-	int key;
 	std::string value;
+	DataItem *next;
 public:
-	__fastcall DataItem(int, std::string);
-	int getKey();
-	int getValue();
+	DataItem(const std::string &val) : value(val), next(NULL) {};
+	DataItem() : value(NULL), next(NULL) {};
+	DataItem* getNext();
+	std::string getValue();
+	void setNext(DataItem*);
 };
 
 //---------------------------------------------------------------------------

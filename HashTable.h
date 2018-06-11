@@ -11,13 +11,12 @@ class HashTable
 private:
 	const static int size = 100;
 	LinkedDataList hashArray[size];
-	//========== This hash function NOT SO GOOD!!!============
 	static int hashFunction(const std::string &value) {
 		int key = value[0];
-		for(unsigned char i = 1; i < value.length(); i++)
+		for(unsigned int i = 1; i < value.length(); i++)
 			key += value[i];
 		return key % 99;
-	};//============================================
+	};
 
 public:
 	HashTable();

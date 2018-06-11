@@ -1,14 +1,23 @@
 //---------------------------------------------------------------------------
 
+#include <vcl.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-
-__fastcall HashTable::HashTable()
+#pragma resource "*.dfm"
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
 {
-	size = 100;
-	hashArray = new DataItem[size];
+	StringGrid2->Cells[0][0] = "№ Помилки";
+	StringGrid2->Cells[1][0] = "Текст помилки";
+	StringGrid2->Cells[2][0] = "Місце у вихідному тексті";
+
+	StringGrid1->Cells[0][0] = "Тип лексеми";
+	StringGrid1->Cells[1][0] = "Значення лексеми";
 }
+//---------------------------------------------------------------------------
 

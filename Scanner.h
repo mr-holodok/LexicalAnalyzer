@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-#pragma unmanaged
 #ifndef ScannerH
 #define ScannerH
 
@@ -7,8 +6,9 @@
 #include "HashTable.h"
 #include "Tree.h"
 #include "ErrorMessage.h"
-#include <list>
-//#include <iostream.h>
+#include <vector>
+#include <iostream.h>
+#include <System.hpp>
 
 class Scanner {
 
@@ -17,7 +17,7 @@ private:
 	unsigned int pos; //variable, that stores current position in line
 	static HashTable hashTable;
 	Tree tree;
-	list<ErrorMessage> Errors;
+	vector<ErrorMessage> Errors;
 
 
 	enum states {H, KWorID, UCharOrID, U8CharOrID, UCharEnd, Char, EscapeChar, ErrorCharEnd,
@@ -34,8 +34,8 @@ private:
 
 public:
 	Scanner();
-	list<Lexem> scan(const std::string&);
-	list<ErrorMessage> getErrors();
+	vector<Lexem> scan(const AnsiString&);
+	vector<ErrorMessage> getErrors();
 	//method, that get a text of program, and returns the lexem table
 	//text will be written from file, so we must create a stream
 	//also method must create lexem table and fill it

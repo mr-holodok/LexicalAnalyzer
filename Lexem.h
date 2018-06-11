@@ -4,6 +4,7 @@
 #define LexemH
 
 #include <string>
+#include <System.hpp>
 
 enum tLex{
 lexIdent, lexKeyWord, lexComma, lexColons, lexDblColons, lexSemiColon,
@@ -39,8 +40,8 @@ private:
 public:
 	Lexem(tLex lex, const std::string& val, const int& l, const int& p) :
 				lexType(lex), value(val), line(l), pos(p) {};
-	std::string getLexType();
-	std::string getValue();
+	AnsiString getLexType();
+	AnsiString getValue();
 	unsigned int getLine();
 	unsigned int getPosition();
 };

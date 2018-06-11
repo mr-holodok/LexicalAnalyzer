@@ -1,0 +1,498 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "MainForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvMemo"
+#pragma link "AdvmCSHS"
+#pragma link "AdvFindDialogForm"
+#pragma resource "*.dfm"
+#include "FormFind.h"
+#include "FindReplaceForm.h"
+#include "About.h"
+#include <cstdio>
+
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+	StringGrid2->Cells[0][0] = "№ Помилки";
+	StringGrid2->Cells[1][0] = "Текст помилки";
+	StringGrid2->Cells[2][0] = "Місце у вихідному тексті";
+
+	StringGrid1->Cells[0][0] = "Тип лексеми";
+	StringGrid1->Cells[1][0] = "Значення лексеми";
+
+	scanner = Scanner();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N3Click(TObject *Sender)
+{
+	this->Cursor = crHourGlass;
+	TCHAR path[MAX_PATH];
+	GetModuleFileName(NULL, path, MAX_PATH );
+	int endIndex;
+	for(endIndex = 0; endIndex <= MAX_PATH; endIndex++)
+		if(path[endIndex] == '\0') break;
+	for(endIndex; endIndex >= 0; endIndex--)
+		if(path[endIndex] == '\\') break;
+	TCHAR *directory = new TCHAR[endIndex + 2];
+	directory[endIndex + 1] = '\0';
+	for(endIndex; endIndex >= 0; endIndex--)
+		directory[endIndex] = path[endIndex];
+	//delete path;
+	AnsiString a_filename = AnsiString(directory) + "~temp_" + currentFile;
+	AdvMemo1->Lines->SaveToFile(a_filename, TEncoding::ANSI);
+	lexemList = scanner.scan(a_filename);
+	remove(a_filename.c_str());
+	if (lexemList.size() > 0) {
+		int i;
+		vector<Lexem>::iterator iter;
+		StringGrid1->RowCount = lexemList.size() + 1;
+		for(iter = lexemList.begin(), i = 1;
+			iter != lexemList.end(); ++iter, ++i) {
+			StringGrid1->Cells[0][i] = iter->getLexType();
+			StringGrid1->Cells[1][i] = iter->getValue();
+		}
+	}
+	else {
+		for(int i = 1; i < StringGrid1->RowCount; i++)
+			StringGrid1->Rows[i]->Clear();
+		StringGrid1->RowCount = 12;
+	}
+	errorsList = scanner.getErrors();
+	if(errorsList.size() > 0)
+	{
+		StringGrid2->RowCount = errorsList.size() + 1;
+		vector<ErrorMessage>::iterator it;
+		int i;
+		for(it = errorsList.begin(), i = 1; it != errorsList.end();
+			++it, ++i) {
+			StringGrid2->Cells[0][i] = IntToStr(i);
+			StringGrid2->Cells[1][i] = it->getText();
+			StringGrid2->Cells[2][i] = UIntToStr(it->getLine()) + ": " + UIntToStr(it->getPos());
+		}
+	}
+	else {
+		for(int i = 1; i < StringGrid2->RowCount; i++)
+			StringGrid2->Rows[i]->Clear();
+		StringGrid2->RowCount = 2;
+	}
+	this->Cursor = crDefault;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N7Click(TObject *Sender)
+{
+	if (OpenTxtDlg->Execute(this->Handle))
+	{
+		currentFile = OpenTxtDlg->FileName;
+
+		int encIndex = OpenTxtDlg->EncodingIndex;
+
+		TEncoding* enc = dynamic_cast<TEncoding*>
+			(OpenTxtDlg->Encodings->Objects[encIndex]);
+
+		if (FileExists(currentFile)) {
+			AdvMemo1->Lines->LoadFromFile(currentFile, enc);
+			StatusBar1->Panels->Items[0]->Text = "Відкрито";
+		}
+		else {
+			MessageDlg("File does not exist", mtError,
+				TMsgDlgButtons() << mbOK, 0);
+        }
+	}
+	if (currentFile.Length() != 0) {
+		Form1->Caption = "LexAnalyzer - " +
+		currentFile.Delete(1, currentFile.LastDelimiter("\\"));
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N8Click(TObject *Sender)
+{
+	if (currentFile.Length() == 0 || currentFile == "NewFile") {
+		if (SaveTxtDlg->Execute(this->Handle)) {
+			String filename = SaveTxtDlg->FileName;
+
+			int encIndex = SaveTxtDlg->EncodingIndex;
+
+			TEncoding* enc = dynamic_cast<TEncoding*>
+				(SaveTxtDlg->Encodings->Objects[encIndex]);
+
+			if (FileExists(filename)) {
+				if(MessageDlg("Даний файл вже існує. Ви точно бажаєто його перезаписати?", mtWarning,
+					TMsgDlgButtons() << mbYes << mbNo, 0) == mrYes) {
+					AdvMemo1->Lines->SaveToFile(filename, enc);
+					currentFile = filename;
+					AdvMemo1->ClearModified();
+					StatusBar1->Panels->Items[0]->Text = "Збережено";
+				}
+			}
+			else {
+				AdvMemo1->Lines->SaveToFile(filename, enc);
+				currentFile = filename;
+				AdvMemo1->ClearModified();
+				StatusBar1->Panels->Items[0]->Text = "Збережено";
+			}
+		}
+		if (currentFile.Length() != 0) {
+			Form1->Caption = "LexAnalyzer - " +
+			currentFile.Delete(1, currentFile.LastDelimiter("\\"));
+		}
+	}
+	else {
+		AdvMemo1->Lines->SaveToFile(currentFile, TEncoding::ANSI);
+		AdvMemo1->ClearModified();
+		StatusBar1->Panels->Items[0]->Text = "Збережено";
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N9Click(TObject *Sender)
+{
+	if (SaveTxtDlg->Execute(this->Handle)) {
+		String filename = SaveTxtDlg->FileName;
+
+		int encIndex = SaveTxtDlg->EncodingIndex;
+
+		TEncoding* enc = dynamic_cast<TEncoding*>
+			(SaveTxtDlg->Encodings->Objects[encIndex]);
+
+		if (FileExists(filename)) {
+			if(MessageDlg("Даний файл вже існує. Ви точно бажаєто його перезаписати?", mtWarning,
+				TMsgDlgButtons() << mbYes << mbNo, 0) == mrYes) {
+				AdvMemo1->Lines->SaveToFile(filename, enc);
+				currentFile = filename;
+				AdvMemo1->ClearModified();
+				StatusBar1->Panels->Items[0]->Text = "Збережено";
+			}
+		}
+		else {
+			AdvMemo1->Lines->SaveToFile(currentFile, enc);
+			currentFile = filename;
+			AdvMemo1->ClearModified();
+			StatusBar1->Panels->Items[0]->Text = "Збережено";
+		}
+	}
+	if (currentFile.Length() != 0) {
+		Form1->Caption = "LexAnalyzer - " +
+		currentFile.Delete(1, currentFile.LastDelimiter("\\"));
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N5Click(TObject *Sender)
+{
+	Form1->Close();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N6Click(TObject *Sender)
+{
+	if (!AdvMemo1->IsEmpty()) {
+		if(MessageDlg("Всі данні буде втрачено. Бажаєте зберегти поточний файл?", mtWarning,
+				TMsgDlgButtons() << mbYes << mbNo, 0) == mrYes) {
+				N8Click(Sender);
+		}
+		AdvMemo1->Clear();
+	}
+	Form1->Caption = "LexAnalyzer - NewFile";
+	StatusBar1->Panels->Items[0]->Text = "Новий";
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::AdvMemo1Click(TObject *Sender)
+{
+	StatusBar1->Panels->Items[1]->Text = IntToStr(AdvMemo1->CurY + 1) + ": " + IntToStr(AdvMemo1->CurX + 1) ;
+	AdvMemo1->ActiveLineSettings->ActiveLineColor = clInfoBk;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N14Click(TObject *Sender)
+{
+	TFindForm *f = new TFindForm(this);
+	f->Show();
+}
+//---------------------------------------------------------------------------
+void TForm1::FindNext(UnicodeString *str, bool down, bool caseOnly)
+{
+	TFindOptions findOptions;
+	if (down) findOptions << frDown;
+	if (caseOnly) findOptions << frMatchCase;
+
+	while (AdvMemo1->FindTextInMemo(*str, findOptions) == -1) {
+		if (MessageDlg("Рядок не знайдено. Бажаєте почати пошук з початку?", mtInformation,
+				TMsgDlgButtons() << mbYes << mbNo, 0) == mrYes) {
+			if (down) AdvMemo1->SetCursor(0, 0);
+			else
+				AdvMemo1->SetCursor(0, AdvMemo1->Lines->Count - 1);
+		}
+		else break;
+	}
+}
+//---------------------------------------------------------------------------
+void TForm1::ReplaceNext(UnicodeString *searchStr, UnicodeString *newStr, bool down, bool caseOnly)
+{
+	TFindOptions findOptions;
+	if (down) findOptions << frDown;
+	if (caseOnly) findOptions << frMatchCase;
+
+	if (AdvMemo1->FindTextInMemo(*searchStr, findOptions) == -1)
+		MessageDlg("Рядок не знайдено.", mtInformation, TMsgDlgButtons() << mbOK, 0);
+	else {
+		AdvMemo1->DeleteSelection();
+		AdvMemo1->InsertText(*newStr);
+	}
+}
+//---------------------------------------------------------------------------
+void TForm1::ReplaceAll(UnicodeString *searchStr, UnicodeString *newStr, bool down, bool caseOnly)
+{
+	TFindOptions findOptions;
+	if (down) findOptions << frDown;
+	if (caseOnly) findOptions << frMatchCase;
+
+	if (AdvMemo1->FindAndReplace(*searchStr, *newStr, findOptions) == -1)
+		MessageDlg("Рядок не знайдено.", mtInformation, TMsgDlgButtons() << mbOK, 0);
+	else
+		MessageDlg("Заміна виконана!", mtInformation, TMsgDlgButtons() << mbOK, 0);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N15Click(TObject *Sender)
+{
+	TForm2 *replaceForm = new TForm2(this);
+	replaceForm->Show();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton1Click(TObject *Sender)
+{
+	N6Click(Sender);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton3Click(TObject *Sender)
+{
+	N7Click(Sender);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton5Click(TObject *Sender)
+{
+	N8Click(Sender);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::AdvMemo1KeyUp(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+	AdvMemo1->RefreshMemo();
+	StatusBar1->Panels->Items[1]->Text = IntToStr(AdvMemo1->CurY + 1) + ": " + IntToStr(AdvMemo1->CurX + 1) ;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::StringGrid1DblClick(TObject *Sender)
+{
+	if (lexemList.empty()) return;
+	Lexem l = lexemList[StringGrid1->Row - 1];
+	AdvMemo1->ActiveLine = l.getLine() - 1;
+	AdvMemo1->CurY = l.getLine() - 1;
+	AdvMemo1->CurX = l.getPosition() - 1;
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::StringGridMouseMove(TObject *Sender, TShiftState Shift, int X,
+          int Y)
+{
+	TStringGrid *SG = static_cast<TStringGrid*>(Sender);
+	SG->SetFocus();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::AdvMemo1MouseMove(TObject *Sender, TShiftState Shift, int X,
+          int Y)
+{
+	AdvMemo1->SetFocus();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton7Click(TObject *Sender)
+{
+	if (AdvMemo1->CanUndo()) {
+		AdvMemo1->Undo();
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton8Click(TObject *Sender)
+{
+	if (AdvMemo1->CanRedo()) {
+		AdvMemo1->Redo();
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton4Click(TObject *Sender)
+{
+	AdvMemo1->PasteFromClipBoard();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton9Click(TObject *Sender)
+{
+	if (AdvMemo1->CanCopy()) {
+		AdvMemo1->CopyToClipBoard();
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ToolButton10Click(TObject *Sender)
+{
+	if (AdvMemo1->CanCut()) {
+		AdvMemo1->CutToClipBoard();
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N19Click(TObject *Sender)
+{
+	AdvMemo1->DeleteSelection();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::StringGrid2DblClick(TObject *Sender)
+{
+	if (errorsList.empty()) return;
+	ErrorMessage msg = errorsList[StringGrid2->Row - 1];
+	AdvMemo1->ActiveLineSettings->ActiveLineColor = clRed;
+	AdvMemo1->ActiveLine = msg.getLine() - 1;
+	AdvMemo1->CurX = msg.getPos() - 1;
+	AdvMemo1->CurY = msg.getLine() - 1;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormResize(TObject *Sender)
+{
+	StringGrid1->ColWidths[0] = StringGrid1->Width / 2;
+	StringGrid1->ColWidths[1] = StringGrid1->Width / 2;
+
+	StringGrid2->ColWidths[0] = StringGrid2->Width / 6;
+	StringGrid2->ColWidths[1] = StringGrid2->Width / 2;
+	StringGrid2->ColWidths[2] = StringGrid2->Width / 3;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Splitter1Moved(TObject *Sender)
+{
+	StringGrid1->ColWidths[0] = StringGrid1->Width / 2;
+	StringGrid1->ColWidths[1] = StringGrid1->Width / 2;
+
+	StringGrid2->ColWidths[0] = StringGrid2->Width / 6;
+	StringGrid2->ColWidths[1] = StringGrid2->Width / 2;
+	StringGrid2->ColWidths[2] = StringGrid2->Width / 3;
+
+	Form1->OnPaint;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image10MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image10->Picture);
+	Image10->Picture = Image11->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::ImageMouseLeave(TObject *Sender)
+{
+	(static_cast<TImage*>(Sender))->Picture->Assign(bmp);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image2MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image2->Picture);
+	Image2->Picture = Image15->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image3MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image3->Picture);
+	Image3->Picture = Image16->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image8MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image8->Picture);
+	Image8->Picture = Image14->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image7MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image7->Picture);
+	Image7->Picture = Image13->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image6MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image6->Picture);
+	Image6->Picture = Image12->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image4MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image4->Picture);
+	Image4->Picture = Image17->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image5MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image5->Picture);
+	Image5->Picture = Image19->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image9MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image9->Picture);
+	Image9->Picture = Image18->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image1MouseEnter(TObject *Sender)
+{
+	bmp = new TBitmap();
+	bmp->Assign(Image1->Picture);
+	Image1->Picture = Image20->Picture;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image1Click(TObject *Sender)
+{
+	N3Click(Sender);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Image9Click(TObject *Sender)
+{
+	AdvMemo1->DeleteSelection();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N23Click(TObject *Sender)
+{
+	AdvMemo1->SelectAll();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	if (AdvMemo1->Modified) {
+		signed char result = MessageDlg("Всі данні буде втрачено. Бажаєте зберегти поточний файл?", mtWarning,
+				TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
+		if(result == mrYes) {
+				N8Click(Sender);
+		}
+		else if(result == mrCancel) {
+				Action = caNone;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N24Click(TObject *Sender)
+{
+	TAboutBox *aboutForm = new TAboutBox(this);
+	aboutForm->ShowModal();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::N4Click(TObject *Sender)
+{
+	ShellExecute(Handle, _T( "open" ), _T( "Help.chm" ), NULL, NULL, SW_NORMAL);
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::AdvMemo1KeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+	StatusBar1->Panels->Items[0]->Text = "Модифіковано";
+	AdvMemo1->ActiveLineSettings->ActiveLineColor = clInfoBk;
+}
+//---------------------------------------------------------------------------
